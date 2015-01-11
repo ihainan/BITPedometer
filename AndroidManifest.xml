@@ -78,10 +78,13 @@
 			android:label="@string/title_activity_single_pklogin" >
 			
 		</activity>
+		
 		<activity
 			android:name="com.claire.pedometer.LeitaiActivity"
 			android:label="@string/title_activity_leitai" >
 		</activity>
+		
+		<service android:name="com.linc.pedometer.service.StepService"> </service>
 	</application>
 
 </manifest>
