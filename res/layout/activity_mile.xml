@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:android1="http://schemas.android.com/apk/res/android"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="#FFFFFF"
+	android:orientation="vertical" >
+
+    <TabHost
+    	android1:id="@android:id/tabhost"
+    	android1:layout_width="match_parent"
+    	android1:layout_height="384dp" >
+
+    	<LinearLayout
+    		android1:layout_width="match_parent"
+    		android1:layout_height="match_parent"
+    		android1:orientation="vertical" >
+
+    		<TabWidget
+    			android1:id="@android:id/tabs"
+    			android1:layout_width="match_parent"
+    			android1:layout_height="45dp" >
+    		</TabWidget>
+
+    		<FrameLayout
+    			android1:id="@android:id/tabcontent"
+    			android1:layout_width="285dp"
+    			android1:layout_height="match_parent"
+    			android1:layout_gravity="center" >
+
+    			<LinearLayout
+    				android1:id="@+id/tab1"
+    				android1:layout_width="match_parent"
+    				android1:layout_height="match_parent" >
+
+    				<LinearLayout
+    					android1:layout_width="match_parent"
+    					android1:layout_height="371dp"
+    					android1:layout_weight="0.16"
+    					android1:orientation="vertical" >
+
+    					<com.github.mikephil.charting.charts.LineChart
+    						android1:id="@+id/chart1"
+    						android1:layout_width="match_parent"
+    						android1:layout_height="107dp" >
+    					</com.github.mikephil.charting.charts.LineChart>
+
+    					<com.github.mikephil.charting.charts.LineChart
+    						android1:id="@+id/chart2"
+    						android1:layout_width="match_parent"
+    						android1:layout_height="108dp"
+    						android1:layout_weight="0.31" >
+
+    					</com.github.mikephil.charting.charts.LineChart>
+
+    					<com.github.mikephil.charting.charts.LineChart
+    						android1:id="@+id/chart3"
+    						android1:layout_width="match_parent"
+    						android1:layout_height="132dp" >
+
+    					</com.github.mikephil.charting.charts.LineChart>
+    				</LinearLayout>
+
+    			</LinearLayout>
+
+    			<LinearLayout
+    				android1:id="@+id/tab2"
+    				android1:layout_width="match_parent"
+    				android1:layout_height="match_parent" >
+
+    				<com.github.mikephil.charting.charts.BarChart
+				        android:id="@+id/monthBar"
+				        android:layout_width="match_parent"
+				        android:layout_height="match_parent">
+    				</com.github.mikephil.charting.charts.BarChart>
+				    
+    			</LinearLayout>
+    		</FrameLayout>
+    	</LinearLayout>
+    </TabHost>
+
+	<LinearLayout
+		android:layout_width="match_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="1"
+		android:orientation="vertical" >
+
+		<ImageView
+			android:id="@+id/imageView1"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:src="@drawable/type" />
+	</LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!--九宫格每一格的布局--> 
+<LinearLayout 
+ xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:orientation="horizontal" 
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent" 
+    > 
+    <ImageView 
+  android:id="@+id/MainActivityImage" 
+  android:layout_width="50dp" 
+  android:layout_height="50dp" 
+  android:layout_gravity="center_horizontal" 
+  /> 
+ <TextView 
+  android:id="@+id/MainActivityText" 
+  android:layout_width="100dp" 
+  android:layout_height="fill_parent" 
+  android:layout_gravity="center_horizontal" 
+   android:gravity="center"
+  /> 
+</LinearLayout> 

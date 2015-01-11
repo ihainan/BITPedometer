@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<string name="app_name">Pedometer</string>
+	<string name="hello_world">Hello world!</string>
+	<string name="action_settings">Settings</string>
+	<string name="title_activity_type">TypeActivity</string>
+	<string name="title_activity_calorie">CalorieActivity</string>
+
+	<string-array name="planets_array">
+		<item>HOME</item>
+		<item>LOGIN</item>
+		<item>WORKOUT</item>
+		<item>SPORTS INFO</item>
+		<item>CALORIE BURN</item>
+		<item>FIND FRIENDS</item>
+		<item>PK</item>
+	</string-array>
+
+	<string name="drawer_open">Open</string>
+	<string name="drawer_close">Close</string>
+
+	<string-array name="menu_content">
+		<item>activity_home</item>
+		<item>activity_login</item>
+		<item>activity_workout</item>
+		<item>activity_mile</item>
+		<item>activity_calorie</item>
+		<item>activity_map</item>
+		<item>activity_single_pklogin</item>
+	</string-array>
+
+	<string name="title_activity_workout">WorkoutActivity</string>
+	<string name="title_activity_baidu_map">BaiduMapActivity</string>
+	<string name="title_activity_login">LoginActivity</string>
+
+	<color name="LogonColor">#FD7C68</color>
+	<color name="White">#FFFFFF</color>
+	<color name="InputColor">#F9F2E6</color>
+
+	<string name="monog">textFamily</string>
+	<string name="title_activity_register">RegisterActivity</string>
+	<string name="title_activity_single_pk">SinglePKActivity</string>
+	<string name="friends_pk">PK</string>
+	<string name="friends_add">+</string>
+
+	<color name="light_purple">#DB7093</color>
+	<color name="purple">#4B0082</color>
+	<color name="carrot">#ED9121</color>
+	<color name="IndiaRed">#B0171F</color>
+	<string name="title_activity_single_pklogin">SinglePKLoginActivity</string>
+	<string name="title_activity_leitai">LeitaiActivity</string>
+
+</resources>

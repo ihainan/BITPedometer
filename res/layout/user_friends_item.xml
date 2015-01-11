@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<!--九宫格每一格的布局--> <LinearLayout 
+ xmlns:android="http://schemas.android.com/apk/res/android" 
+    android:orientation="horizontal" 
+    android:layout_width="fill_parent" 
+    android:layout_height="fill_parent" 
+    > 
+    <ImageView 
+  android:id="@+id/user_avatar" 
+  android:layout_width="50dp" 
+  android:layout_height="50dp" 
+  android:layout_gravity="center_horizontal" 
+  /> 
+ <TextView 
+  android:id="@+id/user_username" 
+  android:layout_width="100dp" 
+  android:layout_height="fill_parent" 
+  android:layout_gravity="center_horizontal" 
+   android:gravity="center"
+  /> 
+  <TextView 
+  android:id="@+id/user_distance" 
+  android:layout_width="110dp" 
+  android:layout_height="fill_parent" 
+  android:layout_gravity="center_horizontal" 
+   android:gravity="center"
+  /> 
+
+  <Button
+      android:id="@+id/user_pk"
+      android:layout_width="60dp"
+      android:layout_height="fill_parent"
+      android:layout_gravity="center_horizontal"
+      android:background="@drawable/friends_pk"
+      android:gravity="center"
+      android:text="@string/friends_pk" />
+
+ 
+
+</LinearLayout> 

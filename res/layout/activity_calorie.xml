@@ -1,0 +1,55 @@
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:tools="http://schemas.android.com/tools"
+	android:id="@+id/container"
+	android:layout_width="match_parent"
+	android:layout_height="match_parent"
+	android:background="@color/White"
+	tools:context="com.claire.statistics.CalorieActivity"
+	tools:ignore="MergeRootFrame" >
+
+    <LinearLayout
+    	android:layout_width="match_parent"
+    	android:layout_height="match_parent"
+    	android:orientation="vertical" >
+
+    	<LinearLayout
+    		android:layout_width="match_parent"
+    		android:layout_height="wrap_content"
+    		android:layout_weight="1.14"
+    		android:orientation="vertical" >
+
+    		<TextView
+    			android:id="@+id/textView1"
+    			android:layout_width="99dp"
+    			android:layout_height="36dp"
+    			android:layout_gravity="center"
+    			android:layout_marginBottom="10dp"
+    			android:layout_marginTop="20dp"
+    			android:text="TextView"
+    			android:textColor="@color/LogonColor"
+    			android:textSize="23sp" />
+    		
+    		<com.github.mikephil.charting.charts.LineChart
+				android:id="@+id/chart1"
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content" >
+    		</com.github.mikephil.charting.charts.LineChart>
+			
+			
+    	</LinearLayout>
+
+    	<LinearLayout
+    		android:layout_width="match_parent"
+    		android:layout_height="245dp"
+    		android:orientation="vertical" >
+
+    		<ImageView
+    			android:id="@+id/imageView1"
+    			android:layout_width="wrap_content"
+    			android:layout_height="match_parent"
+    			android:src="@drawable/burn" />
+    	</LinearLayout>
+    </LinearLayout>
+
+</FrameLayout>
+
