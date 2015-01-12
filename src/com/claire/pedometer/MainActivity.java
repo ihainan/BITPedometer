@@ -279,8 +279,8 @@ public class MainActivity extends Activity {
 	            mileActivity.init(rootView, tf);
 				break;
 			case "LOGIN":
-//				LoginActivity loginActivity = new LoginActivity();
-//				loginActivity.init(rootView);
+				LoginActivity loginActivity = new LoginActivity();
+				loginActivity.init(rootView);
 				TextView tView = (TextView) rootView.findViewById(R.id.textView1);
 		        tView.setOnClickListener(new OnClickListener() {
 					
@@ -308,6 +308,11 @@ public class MainActivity extends Activity {
 			case "FIND FRIENDS":
 				BaiduMapActivity mapActivity = new BaiduMapActivity();
 				mapActivity.init(rootView, tf);
+				//Intent intent = new Intent(MainActivity.this,BaiduMapActivity.class);
+
+			//	MainActivity.this.startActivity(intent);
+				
+				
 				
 				Button button = (Button) rootView.findViewById(R.id.button1);
 				button.setOnClickListener(new OnClickListener() {
