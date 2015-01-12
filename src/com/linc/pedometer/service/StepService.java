@@ -1,8 +1,14 @@
 package com.linc.pedometer.service;
 
+import com.claire.pedometer.MainActivity;
+import com.claire.pedometer.R;
+
+import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -27,11 +33,11 @@ public class StepService extends Service {
     private Sensor mSensor;
     private StepDetector mStepDetector;
     // private StepBuzzer mStepBuzzer; // used for debugging
-    //private StepDisplayer mStepDisplayer;
+    private StepNotifier mStepNotifier;
     private PaceNotifier mPaceNotifier;
     private DistanceNotifier mDistanceNotifier;
     private SpeedNotifier mSpeedNotifier;
-    private CaloriesNotifier mCaloriesNotifier;
+    private WalkCaloriesNotifier mCaloriesNotifier;
     //private SpeakingTimer mSpeakingTimer;
     
     private PowerManager.WakeLock wakeLock;
@@ -57,7 +63,7 @@ public class StepService extends Service {
 
 		Log.w(TAG, "START");
         mNM = (NotificationManager)getSystemService(NOTIFICATION_SERVICE);
-        //showNotification();
+        showNotification();
         
         // Load settings
         mSettings = PreferenceManager.getDefaultSharedPreferences(this);
@@ -80,12 +86,12 @@ public class StepService extends Service {
         IntentFilter filter = new IntentFilter(Intent.ACTION_SCREEN_OFF);
         registerReceiver(mReceiver, filter);
 
-        //mStepDisplayer = new StepDisplayer(mPedometerSettings, mUtils);
-        //mStepDisplayer.setSteps(mSteps = mState.getInt("steps", 0));
-        //mStepDisplayer.addListener(mStepListener);
-        //mStepDetector.addStepListener(mStepDisplayer);
+        mStepNotifier = new StepNotifier(mPedometerSettings);
+        mStepNotifier.setSteps(mSteps = mState.getInt("steps", 0));
+        mStepNotifier.addListener(mStepListener);
+        mStepDetector.addStepListener(mStepNotifier);
 
-        mPaceNotifier     = new PaceNotifier(mPedometerSettings);
+        mPaceNotifier = new PaceNotifier(mPedometerSettings);
         mPaceNotifier.setPace(mPace = mState.getInt("pace", 0));
         mPaceNotifier.addListener(mPaceListener);
         mStepDetector.addStepListener(mPaceNotifier);
@@ -98,7 +104,7 @@ public class StepService extends Service {
         mSpeedNotifier.setSpeed(mSpeed = mState.getFloat("speed", 0));
         mPaceNotifier.addListener(mSpeedNotifier);
         
-        mCaloriesNotifier = new CaloriesNotifier(mCaloriesListener, mPedometerSettings);
+        mCaloriesNotifier = new WalkCaloriesNotifier(mCaloriesListener, mPedometerSettings);
         mCaloriesNotifier.setCalories(mCalories = mState.getFloat("calories", 0));
         mStepDetector.addStepListener(mCaloriesNotifier);
         
@@ -268,10 +274,11 @@ public class StepService extends Service {
     /**
      * Forwards pace values from PaceNotifier to the activity. 
      */
-    /*
-    private StepDisplayer.Listener mStepListener = new StepDisplayer.Listener() {
+    
+    private StepNotifier.Listener mStepListener = new StepNotifier.Listener() {
         public void stepsChanged(int value) {
             mSteps = value;
+            Log.w(TAG, "mStep " + mSteps);
             passValue();
         }
         public void passValue() {
@@ -279,7 +286,7 @@ public class StepService extends Service {
                 mCallback.stepsChanged(mSteps);
             }
         }
-    };*/
+    };
     /**
      * Forwards pace values from PaceNotifier to the activity. 
      */
@@ -328,10 +335,10 @@ public class StepService extends Service {
     /**
      * Forwards calories values from CaloriesNotifier to the activity. 
      */
-    private CaloriesNotifier.Listener mCaloriesListener = new CaloriesNotifier.Listener() {
+    private WalkCaloriesNotifier.Listener mCaloriesListener = new WalkCaloriesNotifier.Listener() {
         public void valueChanged(float value) {
             mCalories = value;
-            Log.w(TAG, "mCalories " + mCalories);
+            Log.w("TAG","mCalory " + mCalories);
             passValue();
         }
         public void passValue() {
@@ -356,6 +363,26 @@ public class StepService extends Service {
             }
         }
     };
+    
+
+    /**
+     * Show a notification while this service is running.
+     */
+    private void showNotification() {
+        CharSequence text = getText(R.string.app_name);
+        Notification notification = new Notification(R.drawable.logo_32, null,
+                System.currentTimeMillis());
+        notification.flags = Notification.FLAG_NO_CLEAR | Notification.FLAG_ONGOING_EVENT;
+        Intent pedometerIntent = new Intent();
+        pedometerIntent.setComponent(new ComponentName(this, MainActivity.class));
+        pedometerIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
+                pedometerIntent, 0);
+        notification.setLatestEventInfo(this, text,
+                getText(R.string.notification_subtitle), contentIntent);
+
+        mNM.notify(R.string.app_name, notification);
+    }
 
     private void acquireWakeLock() {
         PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);

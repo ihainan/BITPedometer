@@ -1,10 +1,22 @@
 package com.claire.user;
 
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
+
 import com.baidu.mapapi.SDKInitializer;
 import com.baidu.mapapi.map.MapView;
 import com.claire.pedometer.R;
 import com.claire.pedometer.R.id;
 import com.claire.pedometer.R.layout;
+import com.linc.pedometer.global.Global;
+import com.linc.pedometer.service.MD5Util;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -19,6 +31,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.os.Build;
 
@@ -31,32 +45,26 @@ public class LoginActivity extends Activity {
 			
 			@Override
 			public void onClick(View arg0) {
+				Log.w("Login", "no account");
 				// TODO Auto-generated method stub
 				Intent intent = new Intent(LoginActivity.this,RegisterActivity.class);
-//				if(intent==null){
-//					Log.v("intent", "tt");	
-//				}
+				
 				LoginActivity.this.startActivity(intent);
-//				ComponentName componentname = new ComponentName(LoginActivity.this, "com.claire.pedometer.RegisterActivity");
-//				Intent intent = new Intent();
-//				intent.setComponent(componentname);
-			//	startActivity(intent);
-
 				
 			}
 		});
+        
+        
+        
+        
 	}
+	
 	
 	 protected void onCreate(Bundle savedInstanceState) {  
 	        super.onCreate(savedInstanceState);   
 
-	        setContentView(R.layout.activity_login);  
-	     
-	        
-	        
-	      
-	    }  
+	        setContentView(R.layout.activity_login);
+	       
+	}  
 	    
-
-
 }

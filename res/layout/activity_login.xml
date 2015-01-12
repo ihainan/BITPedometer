@@ -36,15 +36,19 @@
         			android:textSize="14sp" />
 
         		<EditText
-        			android:id="@+id/editText2"
-        			android:layout_width="wrap_content"
-        			android:layout_height="42dp"
-        			android:layout_marginRight="10dp"
-        			android:background="#F9F2E6"
-        			android:ems="10"
-        			android:inputType="textPersonName"
-        			android:paddingRight="5dp"
-        			android:text="User Name" >
+        		    android:id="@+id/usernameEdit"
+        		    android:layout_width="wrap_content"
+        		    android:layout_height="42dp"
+        		    android:layout_marginRight="10dp"
+        		    android:background="#F9F2E6"
+        		    android:cursorVisible="true"
+        		    android:ems="10"
+        		    android:inputType="textPersonName"
+        		    android:paddingLeft="5dp"
+        		    android:paddingRight="5dp"
+        		    android:text="user01"
+        		    android:textColor="@color/LogonColor"
+        		    android:textCursorDrawable="@null" >
 
         			<requestFocus />
         		</EditText>
@@ -68,13 +72,18 @@
         			android:textSize="15sp" />
 
         		<EditText
-        			android:id="@+id/editText1"
-        			android:layout_width="wrap_content"
-        			android:layout_height="42dp"
-        			android:layout_marginRight="10dp"
-        			android:background="#F9F2E6"
-        			android:ems="10"
-        			android:inputType="textPassword" />
+        		    android:id="@+id/passwordEdit"
+        		    android:layout_width="wrap_content"
+        		    android:layout_height="42dp"
+        		    android:layout_marginRight="10dp"
+        		    android:background="#F9F2E6"
+        		    android:cursorVisible="true"
+        		    android:ems="10"
+        		    android:inputType="textPassword"
+        		    android:paddingLeft="5dp"
+        		    android:paddingRight="5dp"
+        		    android:text="user01"
+        		    android:textColor="@color/LogonColor" />
 
         	</TableRow>
         </TableLayout>
@@ -86,7 +95,7 @@
     		android:orientation="vertical" >
 
     		<Button
-    			android:id="@+id/button1"
+    			android:id="@+id/loginBtn"
     			android:layout_width="287dp"
     			android:layout_height="wrap_content"
     			android:layout_gravity="center"

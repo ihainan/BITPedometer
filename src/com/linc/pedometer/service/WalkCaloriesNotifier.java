@@ -18,12 +18,14 @@
 
 package com.linc.pedometer.service;
 
+import com.linc.pedometer.global.Global;
+
 
 /**
  * Calculates and displays the approximate calories.  
  * @author Levente Bagi
  */
-public class CaloriesNotifier implements StepListener {
+public class WalkCaloriesNotifier implements StepListener {
 
     public interface Listener {
         public void valueChanged(float value);
@@ -37,7 +39,7 @@ public class CaloriesNotifier implements StepListener {
     private static double METRIC_WALKING_FACTOR = 0.708;
     private static double IMPERIAL_WALKING_FACTOR = 0.517;
 
-    private double mCalories = 0;
+    //private double mCalories = 0;
     
     PedometerSettings mSettings;
     //Utils mUtils;
@@ -47,25 +49,27 @@ public class CaloriesNotifier implements StepListener {
     float mStepLength;
     float mBodyWeight;
 
-    public CaloriesNotifier(Listener listener, PedometerSettings settings) {
+    public WalkCaloriesNotifier(Listener listener, PedometerSettings settings) {
         mListener = listener;
         //mUtils = utils;
         mSettings = settings;
         reloadSettings();
     }
+    
     public void setCalories(float calories) {
-        mCalories = calories;
+        Global.WalkCaloryValue = calories;
         notifyListener();
     }
+    
     public void reloadSettings() {
         mIsMetric = mSettings.isMetric();
-        mIsRunning = mSettings.isRunning();
+        mIsRunning = Global.mIsRunning;
         mStepLength = mSettings.getStepLength();
         mBodyWeight = mSettings.getBodyWeight();
         notifyListener();
     }
     public void resetValues() {
-        mCalories = 0;
+    	//mCalories = 0;
     }
     
     public void isMetric(boolean isMetric) {
@@ -78,14 +82,14 @@ public class CaloriesNotifier implements StepListener {
     public void onStep() {
         
         if (mIsMetric) {
-            mCalories += 
+            Global.WalkCaloryValue += 
                 (mBodyWeight * (mIsRunning ? METRIC_RUNNING_FACTOR : METRIC_WALKING_FACTOR))
                 // Distance:
                 * mStepLength // centimeters
                 / 100000.0; // centimeters/kilometer
         }
         else {
-            mCalories += 
+        	Global.WalkCaloryValue += 
                 (mBodyWeight * (mIsRunning ? IMPERIAL_RUNNING_FACTOR : IMPERIAL_WALKING_FACTOR))
                 // Distance:
                 * mStepLength // inches
@@ -96,7 +100,7 @@ public class CaloriesNotifier implements StepListener {
     }
     
     private void notifyListener() {
-        mListener.valueChanged((float)mCalories);
+        mListener.valueChanged((float)Global.WalkCaloryValue);
     }
     
     public void passValue() {

@@ -50,5 +50,8 @@
 	<color name="IndiaRed">#B0171F</color>
 	<string name="title_activity_single_pklogin">SinglePKLoginActivity</string>
 	<string name="title_activity_leitai">LeitaiActivity</string>
+	
+	<string name="notification_subtitle">Counting your steps</string>
+	
 
 </resources>
