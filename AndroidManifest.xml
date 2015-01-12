@@ -31,7 +31,7 @@
 		android:theme="@android:style/Theme.Holo" >
 		<meta-data
 			android:name="com.baidu.lbsapi.API_KEY"
-			android:value="Z3OBYPAvpvUXytm1CH8PuWuw" />
+			android:value="8GXyWtZV690wCIxW74NcKfwW" />
 
 		<activity
 			android:name="com.claire.pedometer.MainActivity"
@@ -86,6 +86,11 @@
 		</activity>
 		
 		<service android:name="com.linc.pedometer.service.StepService"> </service>
+		   <service
+            android:name="com.baidu.location.f"
+            android:enabled="true"
+            android:process=":remote" >
+        </service>
 	</application>
 
 </manifest>

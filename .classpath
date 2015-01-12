@@ -8,9 +8,9 @@
 	<classpathentry kind="lib" path="libs/mpchartlib.jar"/>
 	<classpathentry kind="lib" path="libs/nineoldandroids-2.4.0-2.jar"/>
 	<classpathentry kind="lib" path="libs/xcl-charts.jar"/>
+	<classpathentry kind="lib" path="libs/locSDK_3.1.jar"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry kind="lib" path="libs/baidumapapi_v3_2_0.jar"/>
-	<classpathentry kind="lib" path="libs/locSDK_3.1.jar"/>
+	<classpathentry kind="lib" path="libs/BaiduLBS_Android.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
