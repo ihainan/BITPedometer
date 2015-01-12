@@ -1,8 +1,16 @@
 package com.claire.pedometer;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONObject;
 
 import com.baidu.mapapi.SDKInitializer;
 import com.claire.adapter.MenuAdapter;
@@ -13,12 +21,18 @@ import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.app.SearchManager;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.ServiceConnection;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.IBinder;
+import android.os.Looper;
+import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -33,6 +47,7 @@ import android.view.View.OnClickListener;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -48,11 +63,20 @@ import com.claire.user.RegisterActivity;
 import com.claire.workout.WorkoutActivity;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.linc.pedometer.global.Global;
+import com.linc.pedometer.service.MD5Util;
+import com.linc.pedometer.service.PedometerSettings;
+import com.linc.pedometer.service.StepService;
 
 
-//bcc
+
 @SuppressLint("ValidFragment")
 public class MainActivity extends Activity {
+	
+	private static final String TAG = "PedometerMain";
+    private SharedPreferences mSettings;
+    private PedometerSettings mPedometerSettings;
+	
     private DrawerLayout mDrawerLayout;
     private ListView mDrawerList;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -70,6 +94,8 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(getApplicationContext()); 
         setContentView(R.layout.activity_main);
+        
+        Global.mIsRunning = false;
 
         
         Intent intent = getIntent();
@@ -117,6 +143,30 @@ public class MainActivity extends Activity {
         if (savedInstanceState == null) {
             selectItem(0,0);
         }
+    }
+    
+    @Override
+    protected void onResume() {
+        Log.i(TAG, "[ACTIVITY] onResume");
+        super.onResume();
+        
+        mSettings = PreferenceManager.getDefaultSharedPreferences(this);
+        mPedometerSettings = new PedometerSettings(mSettings);
+        
+        // Read from preferences if the service was running on the last onPause
+        //Global.mIsRunning = mPedometerSettings.isServiceRunning();
+        
+        
+        // Start the service if this is considered to be an application start (last onPause was long ago)
+        if (!Global.mIsRunning) {
+            startStepService();
+            bindStepService();
+        }
+        else if (Global.mIsRunning) {
+            bindStepService();
+        }
+        
+        mPedometerSettings.clearServiceRunning();
     }
 
     @Override
@@ -216,6 +266,73 @@ public class MainActivity extends Activity {
         // Pass any configuration change to the drawer toggls
         mDrawerToggle.onConfigurationChanged(newConfig);
     }
+    
+    
+    private StepService mService;
+    
+    private ServiceConnection mConnection = new ServiceConnection() {
+        public void onServiceConnected(ComponentName className, IBinder service) {
+            mService = ((StepService.StepBinder)service).getService();
+
+            mService.registerCallback(mCallback);
+            mService.reloadSettings();
+            
+        }
+
+        public void onServiceDisconnected(ComponentName className) {
+            mService = null;
+        }
+    };
+    
+
+    private void startStepService() {
+        if (! Global.mIsRunning) {
+            Log.i(TAG, "[SERVICE] Start");
+            Global.mIsRunning = true;
+            startService(new Intent(this,
+                    StepService.class));
+        }
+    }
+    
+    private void bindStepService() {
+        Log.i(TAG, "[SERVICE] Bind");
+        bindService(new Intent(this, 
+                StepService.class), mConnection, Context.BIND_AUTO_CREATE + Context.BIND_DEBUG_UNBIND);
+    }
+
+    private void unbindStepService() {
+        Log.i(TAG, "[SERVICE] Unbind");
+        unbindService(mConnection);
+    }
+    
+    private void stopStepService() {
+        Log.i(TAG, "[SERVICE] Stop");
+        if (mService != null) {
+            Log.i(TAG, "[SERVICE] stopService");
+            stopService(new Intent(this,
+                  StepService.class));
+        }
+        Global.mIsRunning = false;
+    }
+    
+    private StepService.ICallback mCallback = new StepService.ICallback() {
+        public void stepsChanged(int value) {
+            //mHandler.sendMessage(mHandler.obtainMessage(STEPS_MSG, value, 0));
+        }
+        public void paceChanged(int value) {
+           // mHandler.sendMessage(mHandler.obtainMessage(PACE_MSG, value, 0));
+        }
+        public void distanceChanged(float value) {
+            //mHandler.sendMessage(mHandler.obtainMessage(DISTANCE_MSG, (int)(value*1000), 0));
+        }
+        public void speedChanged(float value) {
+            //mHandler.sendMessage(mHandler.obtainMessage(SPEED_MSG, (int)(value*1000), 0));
+        }
+        public void caloriesChanged(float value) {
+           // mHandler.sendMessage(mHandler.obtainMessage(CALORIES_MSG, (int)(value), 0));
+        }
+    };
+
 
     /**
      * Fragment that appears in the "content_frame", shows a planet
@@ -279,19 +396,84 @@ public class MainActivity extends Activity {
 	            mileActivity.init(rootView, tf);
 				break;
 			case "LOGIN":
-//				LoginActivity loginActivity = new LoginActivity();
-//				loginActivity.init(rootView);
+				//final LoginActivity loginActivity = new LoginActivity();
+				//loginActivity.init(rootView);
 				TextView tView = (TextView) rootView.findViewById(R.id.textView1);
 		        tView.setOnClickListener(new OnClickListener() {
 					
 					@Override
 					public void onClick(View arg0) {
-						// TODO Auto-generated method stub
-//						layoutid = R.layout.activity_register;
-//						selectItem(layoutid,1);
 						Intent intent = new Intent(MainActivity.this,RegisterActivity.class);
-
 						MainActivity.this.startActivity(intent);				
+					}
+				});
+		        
+		        
+		        Button sub = (Button) rootView.findViewById(R.id.loginBtn);
+		        sub.setOnClickListener(new OnClickListener() {
+					
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						
+						String username = ((EditText)findViewById(R.id.usernameEdit)).getText().toString();
+				    	String password = ((EditText)findViewById(R.id.passwordEdit)).getText().toString();
+				    	
+				    	final Map<String, String> params = new HashMap<String, String>();
+				    	params.put("username", username);
+				    	params.put("password", MD5Util.MD5(password));
+				    	
+				    	try {
+				    		
+				    		new Thread(){
+				    		@Override
+				    		public void run(){
+				    		//你要执行的方法
+				    		//执行完毕后给handler发送一个空消息
+				    			try {
+				    				//selectItem(0, 0);
+				    				
+				    				Log.w("Login", "login");
+									String result= sendGetRequest(Global.hostUrl+"login", params);
+								
+									JSONObject json = new JSONObject(result);
+									String res = json.getString("res");
+									
+									
+									if(res.equals("true")) {
+										
+										Global.isLogin = true;
+										Global.userid = json.getInt("id");
+										
+										Intent intent = new Intent(MainActivity.this,MainActivity.class);
+					    				intent.putExtra("page", "HOME");
+					    				MainActivity.this.startActivity(intent);
+					    				
+					    				//onDestroy();
+										
+									}
+									else {
+										Looper.prepare();
+										Toast.makeText(getApplicationContext(), "登录失败 : " + json.getString("mes"), Toast.LENGTH_SHORT).show();
+										Looper.loop();
+									}
+									
+								
+									Log.w("Login", res);
+									
+								} catch (Exception e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								}
+				    			//Handler.sendEmptyMessage(0);
+				    		}
+				    		}.start();
+//
+//				    		//String result= sendGetRequest(hostUrl+"regist", params);
+				    	} catch (Exception e) {
+				    		// TODO Auto-generated catch block
+				    		e.printStackTrace();
+				    	}
 					}
 				});
 				break;
@@ -363,4 +545,26 @@ public class MainActivity extends Activity {
 //             return rootView;
         }
     }
+    
+    public String sendGetRequest(String path, Map<String, String> params) throws Exception{
+		StringBuilder sb = new StringBuilder(path);
+		sb.append('?');
+		// ?method=save&title=435435435&timelength=89&
+		for(Map.Entry<String, String> entry : params.entrySet()){
+			sb.append(entry.getKey()).append('=')
+				.append(URLEncoder.encode(entry.getValue(), "UTF-8")).append('&');
+		}
+		sb.deleteCharAt(sb.length()-1);
+	
+		String url = sb.toString();
+
+		HttpGet request = new HttpGet (url);
+		// 发送请求 
+		HttpResponse httpResponse = new DefaultHttpClient().execute(request); 
+		// 得到应答的字符串，这也是一个 JSON 格式保存的数据 
+		String retSrc = EntityUtils.toString(httpResponse.getEntity()); 
+		// 生成 JSON 对象 
+	
+		return retSrc;
+	}
 }
