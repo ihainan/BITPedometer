@@ -27,5 +27,9 @@ public class Global {
 	public static boolean mIsRunning;
 	
 	public static HomeActivity chartHomeActivity;
+	
+	/* Activity Status */
+	public static String activityType = "UNKNOWN";
+	public static int confidence = 100;
 
 }
