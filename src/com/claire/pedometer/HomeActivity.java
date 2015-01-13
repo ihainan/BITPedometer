@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
 import android.renderscript.Type;
 import android.util.Log;
@@ -55,6 +56,7 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 	 private static final int TIME = 2;
 	 
 	 private static int state;
+	 View rootView;
 		
 		public void init(View rootView,Typeface tf){
 //			PieChart mChart = null;
@@ -68,6 +70,7 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 	       
 	        statisticsTextView.setTypeface(tf);
 	        state = DISTANCE;
+	        this.rootView = rootView;
 	        
 	        if(Global.isLogin == true) {
 	        //	Log.w("Login", "id + " + Global.userid);
@@ -286,6 +289,8 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 								e.printStackTrace();
 							}
 							if (Global.mIsRunning) {
+								//Log.w("Login", Global.activityType);
+								//
 								Message msg = new Message();
 								handler.sendMessage(msg);
 							}

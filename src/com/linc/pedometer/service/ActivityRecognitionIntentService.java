@@ -22,10 +22,10 @@ public class ActivityRecognitionIntentService extends IntentService{
 		ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
 		Global.activityType = this.getType(result.getMostProbableActivity().getType());
 		Global.confidence = result.getMostProbableActivity().getConfidence();
-		Log.i(TAG, "ÔË¶¯¼ì²â½á¹û £º " + Global.activityType + ", ÖÃÐÅ¶È£º " +  Global.confidence);
+		Log.i("Login",  Global.activityType + ", " +  Global.confidence);
 	}
 	
-	/* »ñÈ¡ÔË¶¯ÀàÐÍ£¬·µ»Ø×Ö·û´® */
+	/* ï¿½ï¿½È¡ï¿½Ë¶ï¿½ï¿½ï¿½ï¿½Í£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ */
 	private String getType(int type){
 		if(type == DetectedActivity.UNKNOWN)
 			return "UNKNOWN";

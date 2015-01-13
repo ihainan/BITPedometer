@@ -111,6 +111,7 @@ public class MainActivity extends FragmentActivity
         
         /* START : Google Play Service */
         // 构建 Google 服务连接器
+        
         mGoogleApiClient = new GoogleApiClient.Builder(this)
         		.addApi(LocationServices.API)
         		.addApi(ActivityRecognition.API)
@@ -121,6 +122,7 @@ public class MainActivity extends FragmentActivity
         
         mResolvingError = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
+                
         /* END : Google Play Service */
         
         Global.mIsRunning = false;
@@ -238,6 +240,13 @@ public class MainActivity extends FragmentActivity
         }
         // Handle action buttons
         switch(item.getItemId()) {
+        case R.id.exit:
+        	//resetValues(false);
+            unbindStepService();
+            stopStepService();
+            //mQuitting = true;
+            finish();
+            return true;
        /* case R.id.action_websearch:
             // create intent to perform web search for this planet
             Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
