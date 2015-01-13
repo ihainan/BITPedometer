@@ -20,13 +20,15 @@ package com.linc.pedometer.service;
 
 import java.util.ArrayList;
 
+import com.linc.pedometer.global.Global;
+
 /**
  * Counts steps provided by StepDetector and passes the current
  * step count to the activity.
  */
 public class StepNotifier implements StepListener {
 
-    private int mCount = 0;
+    //private int mCount = 0;
     PedometerSettings mSettings;
     //Utils mUtils;
 
@@ -41,11 +43,11 @@ public class StepNotifier implements StepListener {
     }*/
 
     public void setSteps(int steps) {
-        mCount = steps;
+        Global.WalkStepValue = steps;
         notifyListener();
     }
     public void onStep() {
-        mCount ++;
+        Global.WalkStepValue ++;
         notifyListener();
     }
     public void reloadSettings() {
@@ -70,7 +72,7 @@ public class StepNotifier implements StepListener {
     }
     public void notifyListener() {
         for (Listener listener : mListeners) {
-            listener.stepsChanged((int)mCount);
+            listener.stepsChanged((int)Global.WalkStepValue);
         }
     }
     

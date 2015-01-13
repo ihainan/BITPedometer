@@ -5,10 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.claire.pedometer.R;
 import com.claire.pedometer.R.id;
 import com.claire.pedometer.R.layout;
 import com.claire.pedometer.R.menu;
+import com.linc.pedometer.global.Global;
 import com.linc.sina.Constants;
 import com.sina.weibo.sdk.api.ImageObject;
 import com.sina.weibo.sdk.api.MusicObject;
@@ -34,6 +39,8 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -55,6 +62,8 @@ public class WorkoutActivity extends Activity  implements  IWeiboHandler.Respons
 	TextView info_distance;
 	TextView info_calories;
 	int count = 10;
+	Date date;
+	JSONArray data;
 	
 	View rootView;
 	
@@ -89,6 +98,10 @@ public class WorkoutActivity extends Activity  implements  IWeiboHandler.Respons
 	public void init(final View rootView,Typeface tf) {
 		this.rootView = rootView;
 
+		if(!Global.isLogin)
+			return;
+		
+		date = new Date();
 		pre = (ImageView) rootView.findViewById(R.id.info_pre);
 		next = (ImageView) rootView.findViewById(R.id.info_next);
 		sina = (ImageView) rootView.findViewById(R.id.share);
@@ -100,6 +113,10 @@ public class WorkoutActivity extends Activity  implements  IWeiboHandler.Respons
 		info_date.setText(this.getDateString(new Date()));
 		info_date.setTypeface(tf);
 		info_date.refreshDrawableState();
+	
+		
+		data = Global.historydata;
+		setdata();
 		
 		sina.setOnClickListener(new OnClickListener(){
 
@@ -133,11 +150,12 @@ public class WorkoutActivity extends Activity  implements  IWeiboHandler.Respons
 			public void onClick(View view) {
 				
 				// TODO Auto-generated method stub
-				String date = info_date.getText().toString(); 
-				Date nowdate =  getDateFromString(date);
-				Date predate = getDate(nowdate,-1);
+				//String datestr = info_date.getText().toString(); 
+				//Date nowdate =  getDateFromString(date);
+				date = getDate(date, -1);
 //				new  AlertDialog.Builder(MainActivity.this).setTitle("标题" ).setMessage(date+":"+getDateString(nowdate)+":"+getDateString(predate)).setPositiveButton("确定" ,  null ).show();
-				info_date.setText(getDateString(predate));
+				info_date.setText(getDateString(date));
+				setdata();
 				info_date.refreshDrawableState();
 			}
 			
@@ -148,11 +166,12 @@ public class WorkoutActivity extends Activity  implements  IWeiboHandler.Respons
 			@Override
 			public void onClick(View arg0) {
 				// TODO Auto-generated method stub
-				String date = info_date.getText().toString();
-				Date nowdate =  getDateFromString(date);
-				Date nextdate = getDate(nowdate,1);
+				//String date = info_date.getText().toString();
+				//Date nowdate =  getDateFromString(date);
+				date = getDate(date,1);
 //				new  AlertDialog.Builder(MainActivity.this).setTitle("标题" ).setMessage(date+":"+getDateString(nowdate)+":"+getDateString(nextdate)).setPositiveButton("确定" ,  null ).show();
-				info_date.setText(getDateString(nextdate));
+				info_date.setText(getDateString(date));
+				setdata();
 				info_date.refreshDrawableState();
 			}
 			
@@ -168,6 +187,40 @@ public class WorkoutActivity extends Activity  implements  IWeiboHandler.Respons
         mWeiboShareAPI.registerApp();
         
    
+	}
+	
+	public void setdata() {
+		if(data == null) {
+			Log.w("Login", "data is null");
+			return;
+		}
+		
+		SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		String datestr = df.format(date);
+		
+		for(int i = 0; i < data.length(); ++i) {
+			JSONObject jo = (JSONObject)data.opt(i);
+			try {
+				Log.w("Login", jo.getString("date") + " " + datestr);
+				if(jo.getString("date").equals(datestr)) {
+					info_step.setText("TOTAL STEP:" + jo.getInt("walk_step"));
+					info_distance.setText( "Distance:\n" + String.format("%.2f", jo.getDouble("walk_distance")) + "m" );
+					info_calories.setText( "Calories:\n" + String.format("%.2f", jo.getDouble("walk_calory")) + "Cal");
+					return;
+				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
+		info_step.setText("TOTAL STEP:0");
+		info_distance.setText( "Distance:\n0.00m" );
+		info_calories.setText( "Calories:\n0.00Cal");
+		return;
+		
+		
+		
 	}
 	
 

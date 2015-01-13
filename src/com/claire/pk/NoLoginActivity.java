@@ -8,7 +8,9 @@ import com.claire.pedometer.R.menu;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.graphics.Typeface;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -18,6 +20,7 @@ import android.os.Build;
 
 public class NoLoginActivity extends Activity {
 
+	View rootView;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -27,6 +30,12 @@ public class NoLoginActivity extends Activity {
 			getFragmentManager().beginTransaction()
 					.add(R.id.container, new PlaceholderFragment()).commit();
 		}
+	}
+	
+	public void init(final View rootView,Typeface tf) {
+		this.rootView = rootView;
+		//Log.w("Login", "No login");
+		//setContentView(R.layout.activity_no_login);
 	}
 
 	@Override

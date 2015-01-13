@@ -3,6 +3,9 @@ package com.claire.statistics;
 import java.util.ArrayList;
 import java.util.Random;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import com.claire.paragraph.DemoBase;
 import com.claire.pedometer.R;
 import com.claire.pedometer.R.id;
@@ -23,6 +26,7 @@ import com.github.mikephil.charting.utils.YLabels;
 import com.github.mikephil.charting.utils.Legend.LegendForm;
 import com.github.mikephil.charting.utils.XLabels.XLabelPosition;
 import com.github.mikephil.charting.utils.YLabels.YLabelPosition;
+import com.linc.pedometer.global.Global;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -56,6 +60,10 @@ public class MileActivity extends DemoBase  {
 	
 	public void init(View rootView,Typeface tf) {
 		myTabHost = (TabHost) rootView.findViewById(android.R.id.tabhost);  
+		
+		if(!Global.isLogin)
+			return;
+		
 		myTabHost.setup();
 		myTabHost.setBackgroundColor(Color.argb(150, 22, 70, 150));
 		
@@ -67,7 +75,10 @@ public class MileActivity extends DemoBase  {
 		typeCharts[1] = (LineChart) rootView.findViewById(R.id.chart2);
 		typeCharts[2] = (LineChart) rootView.findViewById(R.id.chart3);
 		
-		
+		//JSONArray ja = Global.calorytoday;
+		 
+
+		//allDayArrayList.add((int) ja.getDouble(i-1));
 		
 		 //mTf = Typeface.createFromAsset(getAssets(), "monog.ttf");
 
@@ -78,10 +89,16 @@ public class MileActivity extends DemoBase  {
 		 Random random = new Random();
 		
 		 
-		 for(int i = 0;i <= 24;i++){
-			 footList.add(new Entry(random.nextInt(101),i));
-			 runList.add(new Entry(random.nextInt(101),i));
-			 bikeList.add(new Entry(random.nextInt(101),i));
+		 for(int i = 1;i <= 24;i++){
+			 try {
+				footList.add(new Entry((int) Global.walkdistoday.getDouble(i-1),i));
+				runList.add(new Entry((int) Global.rundistoday.getDouble(i-1),i));
+				bikeList.add(new Entry((int) Global.bicycledistoday.getDouble(i-1),i));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			 
 		 }
 		 
 		 

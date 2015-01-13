@@ -10,7 +10,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
-import org.xclcharts.renderer.XEnum.Location;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -53,6 +52,7 @@ import android.widget.Toast;
 import com.baidu.mapapi.SDKInitializer;
 import com.claire.adapter.MenuAdapter;
 import com.claire.friend.FriendsListActivity;
+import com.claire.pk.NoLoginActivity;
 import com.claire.pk.SinglePKLoginActivity;
 import com.claire.statistics.CalorieActivity;
 import com.claire.statistics.MileActivity;
@@ -486,7 +486,7 @@ public class MainActivity extends FragmentActivity
 				    			try {
 				    				//selectItem(0, 0);
 				    				
-				    				Log.w("Login", "login");
+				    				//Log.w("Login", "login");
 									String result= sendGetRequest(Global.hostUrl+"login", params);
 								
 									JSONObject json = new JSONObject(result);
@@ -512,7 +512,7 @@ public class MainActivity extends FragmentActivity
 									}
 									
 								
-									Log.w("Login", res);
+									//Log.w("Login", res);
 									
 								} catch (Exception e) {
 									// TODO Auto-generated catch block
@@ -531,16 +531,35 @@ public class MainActivity extends FragmentActivity
 				});
 				break;
 			case "WORKOUT":
-				WorkoutActivity workoutActivity = new WorkoutActivity();
-				workoutActivity.init(rootView,tf);
+				if(Global.isLogin) {
+					Log.w("Login", "login");
+					WorkoutActivity workoutActivity = new WorkoutActivity();
+					workoutActivity.init(rootView,tf);
+				}
+				else {
+					Log.w("Login", "nologin");
+					
+					Intent intent = new Intent(MainActivity.this, NoLoginActivity.class);
+					MainActivity.this.startActivity(intent);
+				}
 				break;
 				
 			case "CALORIE BURN":
-				CalorieActivity calorieActivity = new CalorieActivity();
-				calorieActivity.init(rootView,tf);
+				if(Global.isLogin) {
+					Log.w("Login", "login");
+					CalorieActivity calorieActivity = new CalorieActivity();
+					calorieActivity.init(rootView,tf);
+				} else {
+					Log.w("Login", "nologin");
+					
+					Intent intent = new Intent(MainActivity.this, NoLoginActivity.class);
+					MainActivity.this.startActivity(intent);
+				}
 				break;
 				
-			case "FIND FRIENDS":
+			case "PEOPLE AROUND":
+				if(Global.isLogin) {
+					Log.w("Login", "login");
 				BaiduMapActivity mapActivity = new BaiduMapActivity();
 				mapActivity.init(rootView, tf);
 				
@@ -557,13 +576,25 @@ public class MainActivity extends FragmentActivity
 				});
 //				FriendsListActivity frActivity = new FriendsListActivity();
 //				frActivity.init(rootView,inflater);
-				
+				} else {
+					Log.w("Login", "nologin");
+					
+					Intent intent = new Intent(MainActivity.this, NoLoginActivity.class);
+					MainActivity.this.startActivity(intent);
+				}
 				break;
-			case "PK":
 				
+			case "FRIENDS PK":
+				if(Global.isLogin) {
+					Log.w("Login", "login");
 				SinglePKLoginActivity singlePKLoginActivity = new SinglePKLoginActivity();
 				singlePKLoginActivity.init(rootView, inflater,MainActivity.this);
-				
+				} else {
+					Log.w("Login", "nologin");
+					
+					Intent intent = new Intent(MainActivity.this, NoLoginActivity.class);
+					MainActivity.this.startActivity(intent);
+				}
 				/*
 				 * No login, jump to login
 				 */

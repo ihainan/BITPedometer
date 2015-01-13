@@ -42,6 +42,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -330,12 +331,31 @@ public void upload(LatLng location){
 			 float distance = (float) (405* getLongDistance(lastPoint.latitude,lastPoint.longitude, currentLocation.latitude,currentLocation.longitude));
 			
 			// if(Global.)
+			 /*
 			 if(com.linc.pedometer.global.Global.activityType == "RUNNING")
 				 com.linc.pedometer.global.Global.RunDistanceValue += distance;
 			 else if (com.linc.pedometer.global.Global.activityType == "ON_BICYCLE")
 				 com.linc.pedometer.global.Global.BicycleDistanceValue += distance;
+			 else  if(Global.activityType == "ON_FOOT" || Global.activityType=="WALKING")
+				 com.linc.pedometer.global.Global.WalkDistanceValue += distance;
+			 */
+			 
+			 if(Global.getType() == "RUN")
+				 Global.RunDistanceValue += distance;
+			 else if (Global.getType() == "BICYCLE")
+				 Global.BicycleDistanceValue += distance;
+			 else  if(Global.getType() == "WALK" )
+				 Global.WalkDistanceValue += distance;
+			 
+
+			 if(Global.getType() == "RUN")
+				 com.linc.pedometer.global.Global.RunDistanceValue += distance;
+			 else if (Global.getType() == "BICYCLE")
+				 com.linc.pedometer.global.Global.BicycleDistanceValue += distance;
 			 else 
 				 com.linc.pedometer.global.Global.WalkDistanceValue += distance;
+			 
+			 //Log.w("Login", Global.WalkDistanceValue + "");
 
 			DotOptions tmp = new  DotOptions();
 			tmp.color(0xAAFF0000);

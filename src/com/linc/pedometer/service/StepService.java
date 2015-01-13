@@ -37,7 +37,7 @@ public class StepService extends Service {
     private PaceNotifier mPaceNotifier;
     private DistanceNotifier mDistanceNotifier;
     private SpeedNotifier mSpeedNotifier;
-    private WalkCaloriesNotifier mCaloriesNotifier;
+    private CaloriesNotifier mCaloriesNotifier;
     //private SpeakingTimer mSpeakingTimer;
     
     private PowerManager.WakeLock wakeLock;
@@ -96,15 +96,17 @@ public class StepService extends Service {
         mPaceNotifier.addListener(mPaceListener);
         mStepDetector.addStepListener(mPaceNotifier);
 
+        /*
         mDistanceNotifier = new DistanceNotifier(mDistanceListener, mPedometerSettings);
         mDistanceNotifier.setDistance(mDistance = mState.getFloat("distance", 0));
         mStepDetector.addStepListener(mDistanceNotifier);
+        */
         
         mSpeedNotifier    = new SpeedNotifier(mSpeedListener,    mPedometerSettings);
         mSpeedNotifier.setSpeed(mSpeed = mState.getFloat("speed", 0));
         mPaceNotifier.addListener(mSpeedNotifier);
         
-        mCaloriesNotifier = new WalkCaloriesNotifier(mCaloriesListener, mPedometerSettings);
+        mCaloriesNotifier = new CaloriesNotifier(mCaloriesListener, mPedometerSettings);
         mCaloriesNotifier.setCalories(mCalories = mState.getFloat("calories", 0));
         mStepDetector.addStepListener(mCaloriesNotifier);
         
@@ -163,7 +165,7 @@ public class StepService extends Service {
         mStateEditor.putFloat("calories", mCalories);
         mStateEditor.commit();
         
-        //mNM.cancel(R.string.app_name);
+        mNM.cancel(R.string.app_name);
 
         wakeLock.release();
         
@@ -277,8 +279,8 @@ public class StepService extends Service {
     
     private StepNotifier.Listener mStepListener = new StepNotifier.Listener() {
         public void stepsChanged(int value) {
-            mSteps = value;
-            Log.w(TAG, "mStep " + mSteps);
+            //mSteps = value;
+            //Log.w(TAG, "mStep " + mSteps);
             passValue();
         }
         public void passValue() {
@@ -292,8 +294,8 @@ public class StepService extends Service {
      */
     private PaceNotifier.Listener mPaceListener = new PaceNotifier.Listener() {
         public void paceChanged(int value) {
-            mPace = value;
-            Log.w(TAG, "pace " + mPace);
+            //mPace = value;
+            //Log.w(TAG, "pace " + mPace);
             passValue();
         }
         public void passValue() {
@@ -305,10 +307,11 @@ public class StepService extends Service {
     /**
      * Forwards distance values from DistanceNotifier to the activity. 
      */
+    
     private DistanceNotifier.Listener mDistanceListener = new DistanceNotifier.Listener() {
         public void valueChanged(float value) {
-            mDistance = value;
-            Log.w(TAG, "mDistance " + mDistance);
+            //mDistance = value;
+            //Log.w(TAG, "mDistance " + mDistance);
             passValue();
         }
         public void passValue() {
@@ -322,8 +325,8 @@ public class StepService extends Service {
      */
     private SpeedNotifier.Listener mSpeedListener = new SpeedNotifier.Listener() {
         public void valueChanged(float value) {
-            mSpeed = value;
-            Log.w(TAG, "mSpeed  " + mSpeed);
+            //mSpeed = value;
+            //Log.w(TAG, "mSpeed  " + mSpeed);
             passValue();
         }
         public void passValue() {
@@ -335,10 +338,10 @@ public class StepService extends Service {
     /**
      * Forwards calories values from CaloriesNotifier to the activity. 
      */
-    private WalkCaloriesNotifier.Listener mCaloriesListener = new WalkCaloriesNotifier.Listener() {
+    private CaloriesNotifier.Listener mCaloriesListener = new CaloriesNotifier.Listener() {
         public void valueChanged(float value) {
-            mCalories = value;
-            Log.w("TAG","mCalory " + mCalories);
+            //mCalories = value;
+            //Log.w("TAG","mCalory " + mCalories);
             passValue();
         }
         public void passValue() {

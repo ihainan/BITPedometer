@@ -1,13 +1,23 @@
 package com.claire.pedometer;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import android.R.color;
+import android.R.integer;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.DialogInterface.OnClickListener;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -40,6 +50,7 @@ import com.github.mikephil.charting.utils.XLabels;
 import com.github.mikephil.charting.utils.YLabels;
 import com.github.mikephil.charting.utils.Legend.LegendPosition;
 import com.linc.pedometer.global.Global;
+import com.linc.pedometer.service.MD5Util;
 
 public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSeekBarChangeListener,OnChartValueSelectedListener {
 
@@ -69,12 +80,104 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 	        statisticsTextView = (TextView) rootView.findViewById(R.id.Statistics);
 	       
 	        statisticsTextView.setTypeface(tf);
-	        state = DISTANCE;
+	        state = CALORY;
 	        this.rootView = rootView;
 	        
 	        if(Global.isLogin == true) {
 	        //	Log.w("Login", "id + " + Global.userid);
-	        	Toast.makeText(rootView.getContext(), "登录成功 : id " + Global.userid, Toast.LENGTH_SHORT).show();
+	        	//Toast.makeText(rootView.getContext(), "登录成功 : id " + Global.userid, Toast.LENGTH_SHORT).show();
+	        	
+	        	final Map<String, String> params = new HashMap<String, String>();
+		    	params.put("id", Integer.toString(Global.userid));
+		    	
+		    	try {
+		    		
+		    		new Thread(){
+		    		@Override
+		    		public void run(){
+		    		//你要执行的方法
+		    		//执行完毕后给handler发送一个空消息
+		    			try { 
+							String result= sendGetRequest(Global.hostUrl+"history", params);
+							
+							JSONObject json = new JSONObject(result);
+							String res = json.getString("res");
+							
+							if(res.equals("true")) {
+								Global.historydata = json.getJSONArray("datahistory");
+							}
+							
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		    			//Handler.sendEmptyMessage(0);
+		    		}
+		    		}.start();
+//		    		//String result= sendGetRequest(hostUrl+"regist", params);
+		    	} catch (Exception e) {
+		    		// TODO Auto-generated catch block
+		    		e.printStackTrace();
+		    	}
+		    	
+		    	try {
+		    		
+		    		new Thread(){
+		    		@Override
+		    		public void run(){
+		    			try { 
+							String result= sendGetRequest(Global.hostUrl+"calorytoday", params);
+							
+							Log.w("Login", result);
+						
+							JSONObject json = new JSONObject(result);
+							String res = json.getString("res");
+							
+							if(res.equals("true")) {
+								Global.calorytoday = json.getJSONArray("calorytoday");
+							}
+							
+							result= sendGetRequest(Global.hostUrl+"walkdistoday", params);
+							Log.w("Login", result);
+							json = new JSONObject(result);
+							res = json.getString("res");
+							
+							if(res.equals("true")) {
+								Global.walkdistoday = json.getJSONArray("walkdistoday");
+							}
+							
+							result= sendGetRequest(Global.hostUrl+"rundistoday", params);
+							Log.w("Login", result);
+							json = new JSONObject(result);
+							res = json.getString("res");
+							
+							if(res.equals("true")) {
+								Global.rundistoday = json.getJSONArray("rundistoday");
+							}
+							
+							result= sendGetRequest(Global.hostUrl+"bicycledistoday", params);
+							Log.w("Login", result);
+							json = new JSONObject(result);
+							res = json.getString("res");
+							
+							if(res.equals("true")) {
+								Global.bicycledistoday = json.getJSONArray("bicycledistoday");
+							}
+							
+						} catch (Exception e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+		    			//Handler.sendEmptyMessage(0);
+		    		}
+		    		}.start();
+//
+//		    		//String result= sendGetRequest(hostUrl+"regist", params);
+		    	} catch (Exception e) {
+		    		// TODO Auto-generated catch block
+		    		e.printStackTrace();
+		    	}
+	        	
 	        }
 	        
 	        mThread();
@@ -83,6 +186,28 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 	        paint();
 	        
 		}
+		
+		 public String sendGetRequest(String path, Map<String, String> params) throws Exception{
+				StringBuilder sb = new StringBuilder(path);
+				sb.append('?');
+				// ?method=save&title=435435435&timelength=89&
+				for(Map.Entry<String, String> entry : params.entrySet()){
+					sb.append(entry.getKey()).append('=')
+						.append(URLEncoder.encode(entry.getValue(), "UTF-8")).append('&');
+				}
+				sb.deleteCharAt(sb.length()-1);
+			
+				String url = sb.toString();
+
+				HttpGet request = new HttpGet (url);
+				// 发送请求 
+				HttpResponse httpResponse = new DefaultHttpClient().execute(request); 
+				// 得到应答的字符串，这也是一个 JSON 格式保存的数据 
+				String retSrc = EntityUtils.toString(httpResponse.getEntity()); 
+				// 生成 JSON 对象 
+			
+				return retSrc;
+			}
 
 	    @Override
 	    protected void onCreate(Bundle savedInstanceState) {
@@ -97,6 +222,7 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 	    }
 	    
 	    public void setData(float v1, float v2, float v3) {
+	    	//Log.w("PieChart", "123");
 			today.clear();
 			today.put("Walk", v1);
 			today.put("Run", v2);
@@ -110,7 +236,7 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 		}
 		
 		private void setText() {
-			statisticsTextView.setText("Walk:" + today.get("Walk") + "     Run:" + today.get("Run") + "     Bicycle:" + today.get("Bicycle"));
+			statisticsTextView.setText("Walk:" + String.format("%.2f", today.get("Walk")) + "     Run:" + String.format("%.2f", today.get("Run")) + "     Bicycle:" + String.format("%.2f", today.get("Bicycle")));
 		}
 	    
 	    /**
@@ -152,7 +278,7 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 
 	        // add a selection listener
 	        mChart.setOnChartValueSelectedListener(this);
-	        // mChart.setTouchEnabled(false);
+	        //mChart.setTouchEnabled(true);
 
 	        //mChart.setCenterText("Today");
 	        
@@ -234,7 +360,7 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 	        if (e == null)
 	            return;
 	        mChart.highlightValues(null);
-	        //Log.i("PieChart", "Value: " + e.getVal() + ", xIndex: " + e.getXIndex()  + ", DataSet index: " + dataSetIndex);
+	        Log.i("PieChart", "Value: " + e.getVal() + ", xIndex: " + e.getXIndex()  + ", DataSet index: " + dataSetIndex);
 	        changeState();
 	        //setWalk(Global.stepValue);
 	        //paint();
@@ -242,7 +368,7 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 
 	    @Override
 	    public void onNothingSelected() {
-	        //Log.i("PieChart", "nothing selected");
+	        Log.i("PieChart", "nothing selected");
 	        mChart.highlightValues(null);
 	        changeState();
 	        //setWalk(Global.stepValue);
@@ -250,6 +376,7 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 	    }
 	    
 	    private void changeState() {
+	    	//Log.w("Login", "state : "  + state);
 	    	state ++;
 	    	if(state == 3)
 	    		state = 0;
@@ -289,7 +416,7 @@ public class HomeActivity extends com.claire.paragraph.DemoBase implements OnSee
 								e.printStackTrace();
 							}
 							if (Global.mIsRunning) {
-								//Log.w("Login", Global.activityType);
+								//Log.w("Login", Global.speed+"");
 								//
 								Message msg = new Message();
 								handler.sendMessage(msg);

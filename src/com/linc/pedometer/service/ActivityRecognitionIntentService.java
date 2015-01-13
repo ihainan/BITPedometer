@@ -22,7 +22,7 @@ public class ActivityRecognitionIntentService extends IntentService{
 		ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
 		Global.activityType = this.getType(result.getMostProbableActivity().getType());
 		Global.confidence = result.getMostProbableActivity().getConfidence();
-		Log.i("Login",  Global.activityType + ", " +  Global.confidence);
+		//Log.i("Login",  Global.activityType + ", " +  Global.confidence);
 	}
 	
 	/* ��ȡ�˶����ͣ������ַ��� */
