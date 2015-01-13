@@ -47,13 +47,16 @@
 							android:textSize="14sp" />
 
 						<EditText
-							android:id="@+id/editText1"
-							android:layout_width="wrap_content"
-							android:layout_height="match_parent"
-							android:layout_marginLeft="25dp"
-							android:background="@color/InputColor"
-							android:ems="10"
-							android:inputType="textPersonName" />
+						    android:id="@+id/usernameTxt"
+						    android:layout_width="wrap_content"
+						    android:layout_height="match_parent"
+						    android:layout_marginLeft="25dp"
+						    android:background="@color/InputColor"
+						    android:ems="10"
+						    android:inputType="textPersonName"
+						    android:paddingLeft="10dp"
+						    android:textColor="@color/LogonColor" />
+
 					</LinearLayout>
 				</TableRow>
 
@@ -77,13 +80,15 @@
 							android:textColor="@color/LogonColor" />
 
 						<EditText
-							android:id="@+id/editText2"
-							android:layout_width="wrap_content"
-							android:layout_height="match_parent"
-							android:layout_marginLeft="25dp"
-							android:background="@color/InputColor"
-							android:ems="10"
-							android:inputType="textPassword" >
+						    android:id="@+id/passwordTxt"
+						    android:layout_width="wrap_content"
+						    android:layout_height="match_parent"
+						    android:layout_marginLeft="25dp"
+						    android:background="@color/InputColor"
+						    android:ems="10"
+						    android:inputType="textPassword"
+						    android:paddingLeft="10dp"
+						    android:textColor="@color/LogonColor" >
 
 							<requestFocus />
 						</EditText>
@@ -111,12 +116,15 @@
 							android:textSize="14sp" />
 
 						<EditText
-							android:id="@+id/editText3"
-							android:layout_width="wrap_content"
-							android:layout_height="match_parent"
-							android:layout_marginLeft="25dp"
-							android:background="@color/InputColor"
-							android:ems="10" />
+						    android:id="@+id/nicknameTxt"
+						    android:layout_width="wrap_content"
+						    android:layout_height="match_parent"
+						    android:layout_marginLeft="25dp"
+						    android:background="@color/InputColor"
+						    android:ems="10"
+						    android:paddingLeft="10dp"
+						    android:textColor="@color/LogonColor" />
+
 					</LinearLayout>
 				</TableRow>
 
@@ -146,7 +154,7 @@
 							android:layout_weight="0.80" >
 
 							<RadioGroup
-								android:id="@+id/radioGroup2"
+								android:id="@+id/gender"
 								android:layout_width="wrap_content"
 								android:layout_height="wrap_content"
 								android:layout_marginLeft="10dp"
@@ -155,7 +163,7 @@
 								android:visibility="visible" >
 
 								<RadioButton
-									android:id="@+id/radio0"
+									android:id="@+id/boy"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_marginLeft="10dp"
@@ -164,7 +172,7 @@
 									android:textColor="@color/LogonColor" />
 
 								<RadioButton
-									android:id="@+id/radio1"
+									android:id="@+id/girl"
 									android:layout_width="wrap_content"
 									android:layout_height="wrap_content"
 									android:layout_marginLeft="30dp"
@@ -194,6 +202,16 @@
 							android:text="Profile:"
 							android:textColor="@color/LogonColor"
 							android:textSize="14sp" />
+
+						<ImageView
+						    android:id="@+id/avater"
+						    android:layout_width="wrap_content"
+						    android:layout_height="wrap_content"
+						    android:layout_gravity="center"
+						    android:clickable="true"
+						    android:paddingLeft="30dp"
+						    android:src="@drawable/defualt" />
+						
 					</LinearLayout>
 				</TableRow>
 
@@ -203,7 +221,7 @@
 					android:layout_height="wrap_content" >
 
 					<Button
-						android:id="@+id/button1"
+						android:id="@+id/subBtn"
 						android:layout_width="wrap_content"
 						android:layout_height="wrap_content"
 						android:layout_marginLeft="20dp"

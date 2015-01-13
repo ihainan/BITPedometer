@@ -1,7 +1,6 @@
 package com.claire.pedometer;
 
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
@@ -12,19 +11,16 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 
-import com.baidu.mapapi.SDKInitializer;
-import com.claire.adapter.MenuAdapter;
-import com.claire.friend.FriendsListActivity;
-
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.SearchManager;
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
-import android.content.ContextWrapper;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentSender.SendIntentException;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -34,6 +30,8 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
 import android.support.v4.app.ActionBarDrawerToggle;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.util.Log;
@@ -42,27 +40,31 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.claire.pedometer.*;
-import com.claire.pk.NoLoginActivity;
+import com.baidu.mapapi.SDKInitializer;
+import com.claire.adapter.MenuAdapter;
+import com.claire.friend.FriendsListActivity;
 import com.claire.pk.SinglePKLoginActivity;
 import com.claire.statistics.CalorieActivity;
 import com.claire.statistics.MileActivity;
-import com.claire.user.LoginActivity;
 import com.claire.user.RegisterActivity;
 import com.claire.workout.WorkoutActivity;
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.charts.PieChart;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
+import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
+import com.google.android.gms.drive.Drive;
+import com.google.android.gms.location.ActivityRecognition;
+import com.google.android.gms.location.LocationServices;
 import com.linc.pedometer.global.Global;
 import com.linc.pedometer.service.MD5Util;
 import com.linc.pedometer.service.PedometerSettings;
@@ -71,7 +73,8 @@ import com.linc.pedometer.service.StepService;
 
 
 @SuppressLint("ValidFragment")
-public class MainActivity extends Activity {
+public class MainActivity extends FragmentActivity 
+	implements ConnectionCallbacks, OnConnectionFailedListener{
 	
 	private static final String TAG = "PedometerMain";
     private SharedPreferences mSettings;
@@ -89,11 +92,36 @@ public class MainActivity extends Activity {
     
     public int layoutid = 0;
     
+    /* Google Play Service */
+    private GoogleApiClient mGoogleApiClient;	// Google API Client 类，用于与 Google Play 服务的连接工作
+    
+    // 下述成员用于处理无法连接 Google Play 服务时候的相关工作
+    private static final int REQUEST_RESOLVE_ERROR = 1001;    
+    private static final String DIALOG_ERROR = "dialog_error";
+	private static final String STATE_RESOLVING_ERROR = "resolving_error";	
+    private boolean mResolvingError = false;
+    
+    
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         SDKInitializer.initialize(getApplicationContext()); 
         setContentView(R.layout.activity_main);
+        
+        /* START : Google Play Service */
+        // 构建 Google 服务连接器
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+        		.addApi(LocationServices.API)
+        		.addApi(ActivityRecognition.API)
+               	.addScope(Drive.SCOPE_FILE)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .build();
+        
+        mResolvingError = savedInstanceState != null
+                && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
+        /* END : Google Play Service */
         
         Global.mIsRunning = false;
 
@@ -143,6 +171,22 @@ public class MainActivity extends Activity {
         if (savedInstanceState == null) {
             selectItem(0,0);
         }
+    }
+    
+    @Override
+    protected void onStart(){
+    	super.onStart();
+    	// 连接到 Google Play 服务
+        if (!mResolvingError) {
+            mGoogleApiClient.connect();
+        }
+    }
+    
+    @Override
+    protected void onStop(){
+    	// 断开与 Google Play 服务的连接
+        mGoogleApiClient.disconnect();
+    	super.onStop();
     }
     
     @Override
@@ -566,5 +610,103 @@ public class MainActivity extends Activity {
 		// 生成 JSON 对象 
 	
 		return retSrc;
+	}
+
+    /* 连接谷歌服务失败 */
+	@Override
+	public void onConnectionFailed(ConnectionResult result) {
+        if (mResolvingError) {
+        	// 已经在尝试修复错误
+            // Already attempting to resolve an error.
+            return;
+        } else if (result.hasResolution()) {
+        	// 连接错误可以自动解决
+            try {
+                mResolvingError = true;
+                // 尝试自动解决，会启动一个 Activity，一般情况是选择用户
+                result.startResolutionForResult(this, REQUEST_RESOLVE_ERROR);
+            } catch (SendIntentException e) {
+            	// 无法启动自动解决，直接尝试重连
+                mGoogleApiClient.connect();
+            }
+        } else {
+        	// 无法修复错误，直接冻结窗口，弹窗
+            showErrorDialog(result.getErrorCode());
+            mResolvingError = true;
+        }
+	}
+
+	/* 创建一个提示框用于错误提示 */
+    private void showErrorDialog(int errorCode) {
+    	// 创建一个错误提示框
+        ErrorDialogFragment dialogFragment = new ErrorDialogFragment();
+        
+        // 显示错误
+        Bundle args = new Bundle();
+        args.putInt(DIALOG_ERROR, errorCode);
+        dialogFragment.setArguments(args);
+        dialogFragment.show(getSupportFragmentManager(), "errordialog");
+    }
+    
+    /* Called from ErrorDialogFragment when the dialog is dismissed. */
+    public void onDialogDismissed() {
+        mResolvingError = false;
+    }
+
+    /* 创建 fragment 用于显示错误信息 */
+    /* A fragment to display an error dialog */
+    public static class ErrorDialogFragment extends DialogFragment {
+        public ErrorDialogFragment() { }
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            // Get the error code and retrieve the appropriate dialog
+            int errorCode = this.getArguments().getInt(DIALOG_ERROR);
+            return GooglePlayServicesUtil.getErrorDialog(errorCode,
+                    this.getActivity(), REQUEST_RESOLVE_ERROR);
+        }
+
+        @Override
+        public void onDismiss(DialogInterface dialog) {
+            ((MainActivity)getActivity()).onDialogDismissed();
+        }
+    }
+    
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == REQUEST_RESOLVE_ERROR) {
+            mResolvingError = false;
+            if (resultCode == RESULT_OK) {
+                // Make sure the app is not already connected or attempting to connect
+                if (!mGoogleApiClient.isConnecting() &&
+                        !mGoogleApiClient.isConnected()) {
+                    mGoogleApiClient.connect();
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(STATE_RESOLVING_ERROR, mResolvingError);
+    }
+    
+	@Override
+	public void onConnected(Bundle arg0) {
+        Toast toast = Toast.makeText(getApplicationContext(), "连接 Google Play 成功", Toast.LENGTH_LONG);
+        toast.show();
+        
+        Intent i = new Intent(this, com.linc.pedometer.service.ActivityRecognitionIntentService.class);
+        PendingIntent mActivityRecognitionPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        ActivityRecognition.ActivityRecognitionApi.
+        	requestActivityUpdates(mGoogleApiClient, 0, mActivityRecognitionPendingIntent);
+	}
+
+
+	@Override
+	public void onConnectionSuspended(int arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }
