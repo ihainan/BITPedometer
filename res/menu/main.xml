@@ -3,4 +3,5 @@
     <item android:id="@+id/viewGithub" android:title="View on GitHub"></item>
     <item android:id="@+id/website" android:title="Developer Website"></item>
     <item android:id="@+id/report" android:title="Problem Report"></item>
+    <item android:id="@+id/exit" android:title="Exit"></item>
 </menu>

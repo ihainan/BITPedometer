@@ -97,7 +97,7 @@
         </service>
         
 		<!-- Google Play 服务相关 -->
-		<service android:name="ActivityRecognitionIntentService"></service>
+		<service android:name="com.linc.pedometer.service.ActivityRecognitionIntentService"></service>
 		<meta-data android:name="com.google.android.gms.version"
         	android:value="@integer/google_play_services_version" />
 	</application>

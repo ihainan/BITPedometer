@@ -163,7 +163,7 @@ public class StepService extends Service {
         mStateEditor.putFloat("calories", mCalories);
         mStateEditor.commit();
         
-        //mNM.cancel(R.string.app_name);
+        mNM.cancel(R.string.app_name);
 
         wakeLock.release();
         

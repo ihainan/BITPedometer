@@ -1,5 +1,9 @@
 package com.linc.pedometer.global;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import com.baidu.mapapi.model.LatLng;
 import com.claire.pedometer.HomeActivity;
 
 public class Global {
@@ -28,8 +32,9 @@ public class Global {
 	
 	public static HomeActivity chartHomeActivity;
 	
-	/* Activity Status */
-	public static String activityType = "UNKNOWN";
-	public static int confidence = 100;
+	public static List<LatLng> PeopleAround = new ArrayList<LatLng> ();
+	
+	public static String activityType = "INIT";
+	public static int confidence = 100; 
 
 }

@@ -86,6 +86,15 @@
 
         </LinearLayout>
 
+        <ImageView
+            android:id="@+id/share"
+            android:layout_width="168dp"
+            android:layout_height="62dp"
+            android:layout_gravity="center"
+            android:layout_marginBottom="10dp"
+            android:layout_marginTop="30dp"
+            android:src="@drawable/share" />
+
     </LinearLayout>
 
 </RelativeLayout>

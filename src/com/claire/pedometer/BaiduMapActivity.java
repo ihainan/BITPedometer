@@ -19,6 +19,7 @@ import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.map.MyLocationConfiguration.LocationMode;
 import com.baidu.mapapi.model.LatLng;
+
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
@@ -31,6 +32,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 import android.os.Build;
+import android.provider.Settings.Global;
 
 public class BaiduMapActivity extends Activity {
 	// 定位相关
@@ -72,15 +74,17 @@ public class BaiduMapActivity extends Activity {
 		option.setScanSpan(2000);
 		mLocClient.setLocOption(option);
 		mLocClient.start();
+		
+		
+		LatLng p1 = new LatLng(39.97923, 116.357428);
+		LatLng p2 = new LatLng(39.94923, 116.397428);
+		LatLng p3 = new LatLng(39.97923, 116.437428);
+		
+		com.linc.pedometer.global.Global.PeopleAround.add(p1);
+		com.linc.pedometer.global.Global.PeopleAround.add(p2);
+		com.linc.pedometer.global.Global.PeopleAround.add(p3);
+		
 
-		BitmapDescriptor bdA = BitmapDescriptorFactory
-				.fromResource(R.drawable.icon_marka);
-
-		LatLng llA = new LatLng(39.963175, 116.400244);
-
-		OverlayOptions ooA = new MarkerOptions().position(llA).icon(bdA)
-				.zIndex(9).draggable(true);
-		mBaiduMap.addOverlay(ooA);
 
    }
 	
@@ -107,14 +111,7 @@ public class BaiduMapActivity extends Activity {
 		mLocClient.setLocOption(option);
 		mLocClient.start();
 
-		BitmapDescriptor bdA = BitmapDescriptorFactory
-				.fromResource(R.drawable.icon_marka);
 
-		LatLng llA = new LatLng(39.963175, 116.400244);
-
-		OverlayOptions ooA = new MarkerOptions().position(llA).icon(bdA)
-				.zIndex(9).draggable(true);
-		mBaiduMap.addOverlay(ooA);
 
 	}
 
@@ -171,6 +168,27 @@ public class BaiduMapActivity extends Activity {
 	}
 
 	private double totalDistance = 0;
+	
+	
+	private void showAroundPeople(){
+
+		BitmapDescriptor bdA = BitmapDescriptorFactory
+				.fromResource(R.drawable.marker);
+		
+		OverlayOptions ooA;
+		for(int i = 0; i < com.linc.pedometer.global.Global.PeopleAround.size(); i++){
+			LatLng person =  com.linc.pedometer.global.Global.PeopleAround.get(i);
+			ooA = new MarkerOptions().position(person).icon(bdA)
+					.zIndex(9).draggable(true);
+			mBaiduMap.addOverlay(ooA);
+		}
+
+		//LatLng llA = new LatLng(39.963175, 116.400244);
+
+		
+		
+		
+	}
 
 	public class MyLocationListenner implements BDLocationListener {
 
@@ -179,6 +197,8 @@ public class BaiduMapActivity extends Activity {
 			// map view 销毁后不在处理新接收的位置
 			if (location == null || mMapView == null)
 				return;
+			
+			showAroundPeople();
 			
 			
 			System.out.println( "lon:" + location.getLongitude()+ "lat: " + location.getLatitude());
