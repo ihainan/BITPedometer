@@ -33,7 +33,7 @@ public class Global {
 	public static boolean mIsRunning;
 	public static float speed;
 	
-	public static List<LatLng> PeopleAround = new ArrayList<LatLng> ();
+
 	
 	public static JSONArray historydata;
 	public static JSONArray calorytoday;

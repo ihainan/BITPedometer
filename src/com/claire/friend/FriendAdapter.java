@@ -81,6 +81,7 @@ public class FriendAdapter extends BaseAdapter{
 //				TextView text = (TextView)v.findViewById(R.id.friends_username);
 				int index =  Integer.parseInt(v.getTag().toString());
 				Intent intent = new Intent(context,LeitaiActivity.class);
+				intent.putExtra("id", index);
 
 				context.startActivity(intent);
 //				new AlertDialog.Builder(context).setTitle("标题").setMessage(friends.get(index).getUsername()).setPositiveButton("确定", null).show();

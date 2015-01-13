@@ -1,5 +1,6 @@
 package com.claire.workout;
 
+import java.io.File;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -36,17 +37,24 @@ import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.Bitmap.Config;
+import android.graphics.Point;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.util.Log;
+import android.os.Environment;
+import android.view.Display;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -75,6 +83,8 @@ public class WorkoutActivity extends Activity  implements  IWeiboHandler.Respons
 		String result = format.format(date);
 		return result;
 	}
+	
+
 	
 	public Date getDateFromString(String date){
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd,E");
@@ -374,9 +384,9 @@ public class WorkoutActivity extends Activity  implements  IWeiboHandler.Respons
             weiboMessage.textObject = getTextObj();
         
         
-        if (hasImage) {
+
             weiboMessage.imageObject = getImageObj();
-        }
+        
         
         // 用户可以分享其它媒体资源（网页、音乐、视频、声音中的一种）
         if (hasWebpage) {
@@ -454,7 +464,7 @@ public class WorkoutActivity extends Activity  implements  IWeiboHandler.Respons
      * @return 分享的文本模板
      */
     private String getSharedText() {
-        return "今天共跑1000米，消耗卡路里80 ";
+    	return "今天共跑1000米，消耗卡路里80 ";
     }
 
     /**
@@ -476,11 +486,33 @@ public class WorkoutActivity extends Activity  implements  IWeiboHandler.Respons
     private ImageObject getImageObj() {
     	
         ImageObject imageObject = new ImageObject();
-        BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources().openRawResource(R.drawable.ic_launcher));  
-        imageObject.setImageObject(bitmapDrawable.getBitmap());
+       // BitmapDrawable bitmapDrawable = new BitmapDrawable(getResources().openRawResource(R.drawable.ic_launcher));  
+        imageObject.setImageObject(screenShoot()  );
         return imageObject;
 
     }
+    
+    public  Bitmap screenShoot() { 
+        // 获取窗口的顶层视图对象 
+        View v = rootView;
+        v.setDrawingCacheEnabled(true); 
+        v.buildDrawingCache(); 
+
+        // 第一步:获取保存屏幕图像的Bitmap对象 
+
+        Bitmap srcBitmap = v.getDrawingCache(); 
+
+        Bitmap bitmap = Bitmap.createBitmap(srcBitmap, 0, 0, 
+                srcBitmap.getWidth(), srcBitmap.getHeight()); 
+
+        v.destroyDrawingCache(); 
+        return bitmap;
+
+        
+    }
+
+    
+    
 
     /**
      * 创建多媒体（网页）消息对象。

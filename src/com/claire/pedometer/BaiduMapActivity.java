@@ -2,13 +2,18 @@ package com.claire.pedometer;
 
 import java.net.URLEncoder;
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import com.baidu.location.BDLocation;
 import com.baidu.location.BDLocationListener;
@@ -30,6 +35,8 @@ import com.baidu.mapapi.model.LatLng;
 import com.claire.pedometer.UpLoadLocationService.UploadBinder;
 import com.linc.pedometer.global.Global;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
@@ -60,6 +67,10 @@ public class BaiduMapActivity extends Activity {
 
 	MapView mMapView;
 	BaiduMap mBaiduMap;
+	
+	public static List<Person> PeopleAround = new ArrayList<Person>();
+	public static Person me;
+	// List<OverlayOptions> overlays = new ArrayList<OverlayOptions>();
 
 	
 	boolean isFirstLoc = true;// 是否首次定位
@@ -74,12 +85,26 @@ public class BaiduMapActivity extends Activity {
 	UpLoadLocationService uploadService;  
 
 	
+	
+	public class Person{
+		public Person(String name, LatLng location){
+			this.name = name;
+			this.location = location;
+		}
+		public String name;
+		public LatLng location;
+		public float calory;
+		public float time;
+		public int step;
+		public float dis;
+	}
+	
+	
     public void init(View rootView,Typeface tf) {
     	
 
 		
 
-    	
     	
 //   	 SDKInitializer.initialize(getApplicationContext());    
     	//sSDKInitializer.initialize(getApplicationContext());
@@ -100,14 +125,7 @@ public class BaiduMapActivity extends Activity {
 		mLocClient.setLocOption(option);
 		mLocClient.start();
 		
-		
-		LatLng p1 = new LatLng(39.97923, 116.357428);
-		LatLng p2 = new LatLng(39.94923, 116.397428);
-		LatLng p3 = new LatLng(39.97923, 116.437428);
-		
-		com.linc.pedometer.global.Global.PeopleAround.add(p1);
-		com.linc.pedometer.global.Global.PeopleAround.add(p2);
-		com.linc.pedometer.global.Global.PeopleAround.add(p3);
+	
 		
 
 	
@@ -120,7 +138,7 @@ public class BaiduMapActivity extends Activity {
 							// TODO Auto-generated catch block
 							e.printStackTrace();
 						}
-						System.out.println("Thread run");
+					//	System.out.println("Thread run");
 						if(lastPoint != null && Global.isLogin)
 		        	     {
 							peopleAround();
@@ -135,14 +153,99 @@ public class BaiduMapActivity extends Activity {
 			  s.start();
 		    
    }
+    
+	private void parseLocation(String strResult) throws InterruptedException { 
+        try { 
+        	//  System.out.println(strResult);
+        	  JSONObject result = new JSONObject( strResult); 
+            JSONArray jsonObjs = result.getJSONArray("personlist"); 
+            
+            String s = ""; 
+            
+            System.out.println(jsonObjs.length());
+            if(lastPoint == null) 
+            	Thread.sleep(5000);
+            me = new Person(Global.userid+"", lastPoint);
+            PeopleAround = new ArrayList<Person> ();
+            for(int i = 0; i < jsonObjs.length() ; i++){ 
+                JSONObject jsonObj = ((JSONObject)jsonObjs.opt(i)) ;
+                String personname = jsonObj.getString("personname");
+                String personid = jsonObj.getString("personid");
+                String lat = jsonObj.getString("lat"); 
+                String lon = jsonObj.getString("lon"); 
+                getPersonData(Global.userid+"",  new Person(personname, new LatLng(Double.parseDouble(lat), Double.parseDouble(lon))));
+            
+             
+                
+               // provincelist.add(new Place(id, province));
+               // System.out.println(id);
+            } 
+            getPersonData(Global.userid+"",  me);
+            
+            
+        } catch (JSONException e) { 
+            System.out.println("Jsons parse error !"); 
+            e.printStackTrace(); 
+        } 
+    } 
+ 
+	
+private void parsePerson(String strResult, Person person){
+	try{
+	 JSONObject result = new JSONObject( strResult); 
+	 String walk_calory = result.getString("walk_calory");
+	 String run_calory = result.getString("run_calory");
+	 String bicycle_calory = result.getString("bicycle_calory");
+	 float calory = Float.parseFloat(walk_calory) + Float.parseFloat(run_calory)+Float.parseFloat(bicycle_calory);
+	 String walk_distance = result.getString("walk_distance");
+	 String run_distance = result.getString("run_distance");
+	 String bicycle_distance = result.getString("bicycle_distance");
+	 float distance = Float.parseFloat(walk_distance) + Float.parseFloat(run_distance)+Float.parseFloat(bicycle_distance);
+	 String walk_step = result.getString("walk_step");
+	 int step = Integer.parseInt(walk_step);
+	 String walk_time = result.getString("walk_time");
+	 String run_time = result.getString("run_time");
+	 String bicycle_time = result.getString("bicycle_time");
+	 float time  = Float.parseFloat(walk_time) +Float.parseFloat(run_time)+Float.parseFloat(bicycle_time);
+	 person.dis = distance;
+	 person.calory = calory;
+	 person.step = step;
+	 person.time = time;
+	 PeopleAround.add(person);
+	}
+	catch (JSONException e) { 
+        System.out.println("Jsons parse error !"); 
+        e.printStackTrace(); 
+    } 
+}
+private void getPersonData(String id, Person person){
+	
+		
+		Map<String, String> params = new HashMap<String, String>();
+		  params.put("userid", id);
+		 try {
+						String result= sendGetRequest(Global.hostUrl+"datatoday", params);
+						System.out.println(result);
+						 parsePerson(result, person);
+							
+							showAroundPeople();
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		
+	}
 public void peopleAround(){
 		
-		System.out.println("send");
+		//System.out.println("send");
 		Map<String, String> params = new HashMap<String, String>();
 		  params.put("id", Global.userid+"");
 		 try {
 						String result= sendGetRequest(Global.hostUrl+"peoplearound", params);
 						System.out.println(result);
+						 parseLocation(result);
+							
+							showAroundPeople();
 					} catch (Exception e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -193,25 +296,6 @@ public void upload(LatLng location){
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
-		System.out.println("OnCreat");
-		super.onCreate(savedInstanceState);
-		SDKInitializer.initialize(getApplicationContext());
-		setContentView(R.layout.activity_map);
-		// 地图初始化
-		mMapView = (MapView) findViewById(R.id.bmapView);
-		mBaiduMap = mMapView.getMap();
-
-		// 开启定位图层
-		mBaiduMap.setMyLocationEnabled(true);
-		// 定位初始化
-		mLocClient = new LocationClient(this);
-		mLocClient.registerLocationListener(myListener);
-		LocationClientOption option = new LocationClientOption();
-		option.setOpenGps(true);// 打开gps
-		option.setCoorType("bd09ll"); // 设置坐标类型
-		option.setScanSpan(1000);
-		mLocClient.setLocOption(option);
-		mLocClient.start();
 		
 		
 
@@ -278,17 +362,23 @@ public void upload(LatLng location){
 	private double totalDistance = 0;
 	
 	
+
+
+	@TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 	private void showAroundPeople(){
 
+		mBaiduMap.clear();
 		BitmapDescriptor bdA = BitmapDescriptorFactory
 				.fromResource(R.drawable.marker);
 		
 		OverlayOptions ooA;
-		for(int i = 0; i < com.linc.pedometer.global.Global.PeopleAround.size(); i++){
-			LatLng person =  com.linc.pedometer.global.Global.PeopleAround.get(i);
-			ooA = new MarkerOptions().position(person).icon(bdA)
+		for(int i = 0; i < PeopleAround.size(); i++){
+			Person person =  PeopleAround.get(i);
+			ooA = new MarkerOptions().position(person.location).icon(bdA)
 					.zIndex(9).draggable(true);
 			mBaiduMap.addOverlay(ooA);
+			
+			
 		}
 
 		//LatLng llA = new LatLng(39.963175, 116.400244);
@@ -309,15 +399,14 @@ public void upload(LatLng location){
 			// map view 销毁后不在处理新接收的位置
 			if (location == null || mMapView == null)
 				return;
-			
-			showAroundPeople();
-			
+	
 			
 			
 			
 			
 			
-			//System.out.println( "lon:" + location.getLongitude()+ "lat: " + location.getLatitude());
+			
+			System.out.println( "lon:" + location.getLongitude()+ "lat: " + location.getLatitude());
 
 			LatLng currentLocation = new LatLng(location.getLatitude(),
 					location.getLongitude());
