@@ -15,7 +15,7 @@ public class StepDetector implements SensorEventListener {
 	
 
 	private final static String TAG = "StepDetector";
-	public static int CURRENT_STEP = 0;
+	//public static int CURRENT_STEP = 0;
 	public static float SENSITIVITY = 10; // SENSITIVITY灵敏度
 	private float mLastValues[] = new float[3 * 2];
 	private float mScale[] = new float[2];
@@ -86,7 +86,7 @@ public class StepDetector implements SensorEventListener {
 							end = System.currentTimeMillis();
 							if (end - start > 500) {// 此时判断为走了一步
 
-								CURRENT_STEP++;
+								//CURRENT_STEP++;
 								mLastMatch = extType;
 								start = end;
 								for (StepListener stepListener : mStepListeners) {
@@ -108,10 +108,11 @@ public class StepDetector implements SensorEventListener {
 			}
 
 		}
-		Global.WalkStepValue = CURRENT_STEP;
+		//Global.WalkStepValue = CURRENT_STEP;
 		//Log.w("stepService", CURRENT_STEP+"");
 		//Global.chartHomeActivity.setWalk(CURRENT_STEP);
 	}
+	
 	//当传感器的经度发生变化时就会调用这个方法，在这里没有用
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
 
