@@ -15,17 +15,17 @@ public class Global {
 	
 	public static int WalkStepValue;
 	public static int WalkPaceValue;	
-	public static float WalkDistanceValue;
+	public static float WalkDistanceValue = 0;
 	public static float WalkSpeedValue;
 	public static float WalkTimeValue;
 	public static float WalkCaloryValue;
 	
 	public static float RunCaloryValue;
-	public static float RunDistanceValue;
+	public static float RunDistanceValue = 0;
 	public static float RunTimeValue;
 	
 	public static float BicycleCaloryValue;
-	public static float BicycleDistanceValue;
+	public static float BicycleDistanceValue = 0;
 	public static float BicycleTimeValue;
 	
 	public static boolean mIsRunning;
@@ -33,5 +33,11 @@ public class Global {
 	public static HomeActivity chartHomeActivity;
 	
 	public static List<LatLng> PeopleAround = new ArrayList<LatLng> ();
+	
+	/* Activity Status */
+	public static String activityType = "UNKNOWN";
+	public static int confidence = 100;
+	
+	
 
 }
