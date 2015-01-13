@@ -103,7 +103,8 @@ public class PaceNotifier implements StepListener {
             }
             if (isMeaningfull && sum > 0) {
                 long avg = sum / mLastStepDeltas.length;
-                mPace = 60*1000 / avg;
+                if(avg > 0)
+                	mPace = 60*1000 / avg;
                 
                 /*
                 // TODO: remove duplication. This also exists in SpeedNotifier

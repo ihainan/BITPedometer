@@ -1,13 +1,16 @@
 package com.claire.pk;
 
+import com.claire.pedometer.MainActivity;
 import com.claire.pedometer.R;
 import com.claire.pedometer.R.id;
 import com.claire.pedometer.R.layout;
 import com.claire.pedometer.R.menu;
+import com.claire.user.LoginActivity;
 
 import android.app.Activity;
 import android.app.ActionBar;
 import android.app.Fragment;
+import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,7 +18,9 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.os.Build;
 
 public class NoLoginActivity extends Activity {
@@ -25,6 +30,17 @@ public class NoLoginActivity extends Activity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_no_login);
+		
+		findViewById(R.id.button1).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Intent intent = new Intent(NoLoginActivity.this, LoginActivity.class);
+				NoLoginActivity.this.startActivity(intent);
+				
+			}
+		});
 
 		if (savedInstanceState == null) {
 			getFragmentManager().beginTransaction()
