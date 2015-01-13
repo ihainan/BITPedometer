@@ -3,6 +3,8 @@ package com.linc.pedometer.global;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONArray;
+
 import com.baidu.mapapi.model.LatLng;
 import com.claire.pedometer.HomeActivity;
 
@@ -15,26 +17,41 @@ public class Global {
 	
 	public static int WalkStepValue;
 	public static int WalkPaceValue;	
-	public static float WalkDistanceValue;
+	public static float WalkDistanceValue = 0;
 	public static float WalkSpeedValue;
-	public static float WalkTimeValue;
+	public static float WalkTimeValue = 0;
 	public static float WalkCaloryValue;
 	
 	public static float RunCaloryValue;
-	public static float RunDistanceValue;
+	public static float RunDistanceValue = 0;
 	public static float RunTimeValue;
 	
 	public static float BicycleCaloryValue;
-	public static float BicycleDistanceValue;
+	public static float BicycleDistanceValue = 0;
 	public static float BicycleTimeValue;
 	
 	public static boolean mIsRunning;
+	public static float speed;
 	
-	public static HomeActivity chartHomeActivity;
+
 	
-	public static List<LatLng> PeopleAround = new ArrayList<LatLng> ();
+	public static JSONArray historydata;
+	public static JSONArray calorytoday;
+	public static JSONArray walkdistoday;
+	public static JSONArray rundistoday;
+	public static JSONArray bicycledistoday;
 	
-	public static String activityType = "INIT";
-	public static int confidence = 100; 
+	/* Activity Status */
+	public static String activityType = "UNKNOWN";
+	public static int confidence = 100;
+	
+	public static String getType () {
+		if(Global.speed < 2)
+			return "WALK";
+		else if(Global.speed < 10)
+			return "RUN";
+		else
+			return "BICYCLE";
+	}
 
 }

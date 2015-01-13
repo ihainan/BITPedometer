@@ -18,16 +18,14 @@ public class ActivityRecognitionIntentService extends IntentService{
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		if(ActivityRecognitionResult.hasResult(intent)){
-			// TODO Auto-generated method stub
-			ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
-			Global.activityType = this.getType(result.getMostProbableActivity().getType());
-			Global.confidence = result.getMostProbableActivity().getConfidence();
-			Log.i("Login", "运动类型：" + Global.activityType + ",置信度 " +  Global.confidence);
-		}
+		// TODO Auto-generated method stub
+		ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
+		Global.activityType = this.getType(result.getMostProbableActivity().getType());
+		Global.confidence = result.getMostProbableActivity().getConfidence();
+		//Log.i("Login",  Global.activityType + ", " +  Global.confidence);
 	}
 	
-	/* 获取运动类型 */
+	/* ��ȡ�˶����ͣ������ַ��� */
 	private String getType(int type){
 		if(type == DetectedActivity.UNKNOWN)
 			return "UNKNOWN";

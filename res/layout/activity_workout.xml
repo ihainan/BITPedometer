@@ -81,7 +81,7 @@
             	android:layout_weight="1"
             	android:gravity="center"
             	android:text="Calories:\n12000Cal"
-            	android:textColor="@color/White"
+            	android:textColor="@color/purple"
             	android:textSize="24sp" />
 
         </LinearLayout>

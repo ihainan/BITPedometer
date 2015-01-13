@@ -18,6 +18,8 @@
 
 package com.linc.pedometer.service;
 
+import com.linc.pedometer.global.Global;
+
 
 /**
  * Calculates and displays the distance walked.  
@@ -57,7 +59,17 @@ public class DistanceNotifier implements StepListener {
     }
     
     public void onStep() {
-        
+        /*
+    	if(Global.getType() == "RUN") {
+			Global.RunCaloryValue = mBodyWeight * Global.RunTimeValue / 3600 / 60 * 35;
+		} else if(Global.getType() == "BICYCLE") {
+			Global.BicycleTimeValue = (float) (mBodyWeight * 20 * 9.7 * Global.BicycleTimeValue / 3600 / 60);
+		} else {
+			 Global.WalkDistanceValue += (float)(// kilometers
+		                mStepLength // centimeters
+		                / 100000.0); // centimeters/kilometer
+		}*/
+    	/*
         if (mIsMetric) {
             mDistance += (float)(// kilometers
                 mStepLength // centimeters
@@ -68,7 +80,7 @@ public class DistanceNotifier implements StepListener {
                 mStepLength // inches
                 / 63360.0); // inches/mile
         }
-        
+        */
         notifyListener();
     }
     

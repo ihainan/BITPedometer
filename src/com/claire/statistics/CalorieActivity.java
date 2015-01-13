@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Random;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+
 import com.claire.pedometer.R;
 import com.claire.pedometer.R.id;
 import com.claire.pedometer.R.layout;
@@ -19,6 +22,10 @@ import com.github.mikephil.charting.utils.YLabels;
 
 
 
+
+
+import com.google.android.gms.internal.js;
+import com.linc.pedometer.global.Global;
 
 import android.app.Activity;
 import android.app.ActionBar;
@@ -45,8 +52,14 @@ public class CalorieActivity extends Activity {
 	 public void init(View rootView,Typeface tf){
 		 Random random = new Random();
 		 nChart = (LineChart) rootView.findViewById(R.id.chart1);
-	        for(int i = 1;i <=24; i++){
-	        	allDayArrayList.add(random.nextInt(101));
+		 JSONArray ja = Global.calorytoday;
+		 for(int i = 1;i <= 24; i++){
+	        	try {
+					allDayArrayList.add((int) ja.getDouble(i-1));
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 	        }
 	        Log.v("AllDayArrayList", allDayArrayList.toString());
 	        
@@ -78,9 +91,17 @@ public class CalorieActivity extends Activity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_calorie);
 		 nChart = (LineChart) findViewById(R.id.chart1);
-        Random random = new Random();
-        for(int i = 1;i <=24; i++){
-        	allDayArrayList.add(random.nextInt(101));
+        //Random random = new Random();
+		
+		JSONArray ja = Global.calorytoday;
+		 
+        for(int i = 1;i <= 24; i++){
+        	try {
+				allDayArrayList.add((int) ja.getDouble(i-1));
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
         }
         Log.v("AllDayArrayList", allDayArrayList.toString());
         

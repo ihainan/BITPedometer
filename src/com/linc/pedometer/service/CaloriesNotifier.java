@@ -25,7 +25,7 @@ import com.linc.pedometer.global.Global;
  * Calculates and displays the approximate calories.  
  * @author Levente Bagi
  */
-public class WalkCaloriesNotifier implements StepListener {
+public class CaloriesNotifier implements StepListener {
 
     public interface Listener {
         public void valueChanged(float value);
@@ -44,12 +44,12 @@ public class WalkCaloriesNotifier implements StepListener {
     PedometerSettings mSettings;
     //Utils mUtils;
     
-    boolean mIsMetric;
+    //boolean mIsMetric;
     boolean mIsRunning;
     float mStepLength;
     float mBodyWeight;
 
-    public WalkCaloriesNotifier(Listener listener, PedometerSettings settings) {
+    public CaloriesNotifier(Listener listener, PedometerSettings settings) {
         mListener = listener;
         //mUtils = utils;
         mSettings = settings;
@@ -62,7 +62,7 @@ public class WalkCaloriesNotifier implements StepListener {
     }
     
     public void reloadSettings() {
-        mIsMetric = mSettings.isMetric();
+        //mIsMetric = mSettings.isMetric();
         mIsRunning = Global.mIsRunning;
         mStepLength = mSettings.getStepLength();
         mBodyWeight = mSettings.getBodyWeight();
@@ -73,7 +73,7 @@ public class WalkCaloriesNotifier implements StepListener {
     }
     
     public void isMetric(boolean isMetric) {
-        mIsMetric = isMetric;
+        //mIsMetric = isMetric;
     }
     public void setStepLength(float stepLength) {
         mStepLength = stepLength;
@@ -81,20 +81,49 @@ public class WalkCaloriesNotifier implements StepListener {
     
     public void onStep() {
         
-        if (mIsMetric) {
-            Global.WalkCaloryValue += 
+        //if (mIsMetric) {
+    	//if(Global.activityType)
+           /* Global.WalkCaloryValue += 
                 (mBodyWeight * (mIsRunning ? METRIC_RUNNING_FACTOR : METRIC_WALKING_FACTOR))
                 // Distance:
                 * mStepLength // centimeters
-                / 100000.0; // centimeters/kilometer
-        }
+                / 100000.0; // centimeters/kilometer*/
+     
+    	
+    	 if(Global.getType() == "RUN") {
+				Global.RunCaloryValue = (float) (35 * mBodyWeight * Global.RunTimeValue / 216000.0);
+			} else if(Global.getType() == "BICYCLE") {
+				Global.BicycleTimeValue = (float) (mBodyWeight * 20 * 9.7 * Global.BicycleTimeValue / 216000.0);
+			} else {
+				 Global.WalkCaloryValue += (mBodyWeight * (mIsRunning ? METRIC_RUNNING_FACTOR : METRIC_WALKING_FACTOR))
+						 // Distance:
+						 * mStepLength // centimeters
+						 / 100000.0; 
+			}
+    	
+    	/*
+            if(Global.activityType == "RUNNING") {
+				Global.RunCaloryValue = mBodyWeight * Global.RunTimeValue / 3600 / 60 * 35;
+			} else if(Global.activityType == "ON_BICYCLE") {
+				Global.BicycleTimeValue = (float) (mBodyWeight * 20 * 9.7 * Global.BicycleTimeValue / 3600 / 60);
+			} else if(Global.activityType == "ON_FOOT" || Global.activityType=="WALKING") {
+				 Global.WalkCaloryValue +=
+						 (mBodyWeight * (mIsRunning ? METRIC_RUNNING_FACTOR : METRIC_WALKING_FACTOR))
+						 // Distance:
+						 * mStepLength // centimeters
+						 / 100000.0; 
+			}
+            */
+            
+            
+        /*}
         else {
         	Global.WalkCaloryValue += 
                 (mBodyWeight * (mIsRunning ? IMPERIAL_RUNNING_FACTOR : IMPERIAL_WALKING_FACTOR))
                 // Distance:
                 * mStepLength // inches
                 / 63360.0; // inches/mile            
-        }
+        }*/
         
         notifyListener();
     }

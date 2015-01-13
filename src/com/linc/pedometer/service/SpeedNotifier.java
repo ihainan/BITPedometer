@@ -18,6 +18,8 @@
 
 package com.linc.pedometer.service;
 
+import com.linc.pedometer.global.Global;
+
 
 /**
  * Calculates and displays pace (steps / minute), handles input of desired pace,
@@ -36,7 +38,7 @@ public class SpeedNotifier implements PaceNotifier.Listener {
     private Listener mListener;
     
     int mCounter = 0;
-    float mSpeed = 0;
+    //float mSpeed = 0;
     
     boolean mIsMetric;
     float mStepLength;
@@ -62,7 +64,8 @@ public class SpeedNotifier implements PaceNotifier.Listener {
         reloadSettings();
     }
     public void setSpeed(float speed) {
-        mSpeed = speed;
+        //mSpeed = speed;
+    	Global.speed = speed;
         notifyListener();
     }
     public void reloadSettings() {
@@ -79,20 +82,20 @@ public class SpeedNotifier implements PaceNotifier.Listener {
     }
     
     private void notifyListener() {
-        mListener.valueChanged(mSpeed);
+        mListener.valueChanged(Global.speed);
     }
     
     public void paceChanged(int value) {
-        if (mIsMetric) {
-            mSpeed = // kilometers / hour
+        //if (mIsMetric) {
+            Global.speed = // kilometers / hour
                 value * mStepLength // centimeters / minute
                 / 100000f * 60f; // centimeters/kilometer
-        }
-        else {
-            mSpeed = // miles / hour
-                value * mStepLength // inches / minute
-                / 63360f * 60f; // inches/mile 
-        }
+        //}
+        ///else {
+        //    mSpeed = // miles / hour
+        //        value * mStepLength // inches / minute
+         //       / 63360f * 60f; // inches/mile 
+        //}
         //tellFasterSlower();
         notifyListener();
     }

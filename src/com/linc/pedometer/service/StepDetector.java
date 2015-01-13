@@ -1,6 +1,7 @@
 package com.linc.pedometer.service;
 
 import java.util.ArrayList;
+import java.util.Date;
 
 import com.linc.pedometer.global.Global;
 
@@ -9,6 +10,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.os.Message;
 import android.util.Log;
 
 public class StepDetector implements SensorEventListener {
@@ -22,6 +24,11 @@ public class StepDetector implements SensorEventListener {
 	private float mYOffset;
 	private static long end = 0;
 	private static long start = 0;
+	
+	Date lasttime;
+	Date thistime;
+	
+	private Thread thread;
 	/**
 	 * 最后加速度方向
 	 */
@@ -39,6 +46,9 @@ public class StepDetector implements SensorEventListener {
 	 */
 	public StepDetector(Context context) {
 		super();
+		//mThread();
+		start = System.currentTimeMillis();
+		lasttime = new Date();
 		int h = 480;
 		mYOffset = h * 0.5f;
 		mScale[0] = -(h * 0.5f * (1.0f / (SensorManager.STANDARD_GRAVITY * 2)));
@@ -56,6 +66,9 @@ public class StepDetector implements SensorEventListener {
 	public void onSensorChanged(SensorEvent event) {
 		Sensor sensor = event.sensor;
 		synchronized (this) {
+			
+			thistime = new Date();
+			
 			if (sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
 
 				float vSum = 0;
@@ -80,32 +93,52 @@ public class StepDetector implements SensorEventListener {
 						boolean isAlmostAsLargeAsPrevious = diff > (mLastDiff[k] * 2 / 3);
 						boolean isPreviousLargeEnough = mLastDiff[k] > (diff / 3);
 						boolean isNotContra = (mLastMatch != 1 - extType);
+						//end = System.currentTimeMillis();
 
 						if (isAlmostAsLargeAsPrevious && isPreviousLargeEnough
 								&& isNotContra) {
-							end = System.currentTimeMillis();
-							if (end - start > 500) {// 此时判断为走了一步
-
-								//CURRENT_STEP++;
-								mLastMatch = extType;
-								start = end;
-								for (StepListener stepListener : mStepListeners) {
-                                	//Log.w(TAG, "onstep");
-                                    stepListener.onStep();
-                                }
+							
+							
+							if(Global.getType() == "RUN") {
+								Global.RunTimeValue += ((thistime.getTime()-lasttime.getTime())/1000.0);
+							} else if(Global.getType() == "BICYCLE") {
+								Global.BicycleTimeValue += ((thistime.getTime()-lasttime.getTime())/1000.0);
+							} else  {
+								Log.w("Login", "end" + thistime.getTime());
+								Log.w("Login", "start" + lasttime.getTime());
+								Global.WalkTimeValue += ((thistime.getTime()-lasttime.getTime())/1000.0);
+								Log.w("Login", Global.WalkTimeValue + "walktime");
 							}
-							else {
-								mLastMatch = -1;
+								
+							/*
+							if(Global.activityType == "RUNNING") {
+								Global.RunTimeValue += (end - start)/1000;
+							} else if(Global.activityType == "ON_BICYCLE") {
+								Global.BicycleTimeValue += (end - start)/1000;
+							} else if(Global.activityType == "ON_FOOT" || Global.activityType=="WALKING") {
+								Global.WalkTimeValue += (end - start)/1000;
+							}*/
+								
+							//CURRENT_STEP++;
+							mLastMatch = extType;
+							lasttime = thistime;
+							
+							for (StepListener stepListener : mStepListeners) {
+								//Log.w(TAG, "onstep");
+								stepListener.onStep();
 							}
 						} else {
 							mLastMatch = -1;
 						}
+						
 					}
 					mLastDiff[k] = diff;
 				}
 				mLastDirections[k] = direction;
 				mLastValues[k] = v;
 			}
+			if(thistime.getTime()-lasttime.getTime() > 2000)
+				lasttime = thistime;
 
 		}
 		//Global.WalkStepValue = CURRENT_STEP;
@@ -117,5 +150,42 @@ public class StepDetector implements SensorEventListener {
 	public void onAccuracyChanged(Sensor arg0, int arg1) {
 
 	}
+
+	/*
+	private void mThread() {
+		if (thread == null) {
+
+			thread = new Thread(new Runnable() {
+				public void run() {
+					
+					int lastStep;
+					float last runDistance;
+					float last 
+					
+					while (true) {
+						try {
+							Thread.sleep(10);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						
+						if(Global.getType() == "RUN" && ) {
+							Global.RunTimeValue += 0.01;
+						} else if(Global.getType() == "BICYCLE") {
+							Global.BicycleTimeValue += 0.01;
+						} else  {
+							
+							Global.WalkTimeValue += 0.01;
+							Log.w("Login", Global.WalkTimeValue + "walktime");
+						}
+						
+					}
+				}
+			});
+			thread.start();
+		}
+	}
+	*/
+	
 
 }

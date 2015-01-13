@@ -13,8 +13,8 @@
 		<item>WORKOUT</item>
 		<item>SPORTS INFO</item>
 		<item>CALORIE BURN</item>
-		<item>FIND FRIENDS</item>
-		<item>PK</item>
+		<item>PEOPLE AROUND</item>
+		<item>FRIENDS PK</item>
 	</string-array>
 
 	<string name="drawer_open">Open</string>
