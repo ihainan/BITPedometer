@@ -541,7 +541,6 @@ public class MainActivity extends FragmentActivity
 				break;
 				
 			case "PEOPLE AROUND":
-				System.out.println("11");
 				BaiduMapActivity mapActivity = new BaiduMapActivity();
 				mapActivity.init(rootView, tf);
 				
