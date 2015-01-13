@@ -173,7 +173,7 @@ public class BaiduMapActivity extends Activity {
                 String personid = jsonObj.getString("personid");
                 String lat = jsonObj.getString("lat"); 
                 String lon = jsonObj.getString("lon"); 
-                getPersonData(Global.userid+"",  new Person(personname, new LatLng(Double.parseDouble(lat), Double.parseDouble(lon))));
+                getPersonData(personid,  new Person(personname, new LatLng(Double.parseDouble(lat), Double.parseDouble(lon))));
             
              
                 
