@@ -27,6 +27,7 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.graphics.Typeface;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.preference.PreferenceManager;
@@ -66,6 +67,9 @@ import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListe
 import com.google.android.gms.drive.Drive;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.wearable.DataMap;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.Wearable;
 import com.linc.pedometer.global.Global;
 import com.linc.pedometer.service.ActivityRecognitionIntentService;
 import com.linc.pedometer.service.MD5Util;
@@ -103,6 +107,10 @@ public class MainActivity extends FragmentActivity
 	private static final String STATE_RESOLVING_ERROR = "resolving_error";	
     private boolean mResolvingError = false;
     
+    // Android Wear 同步相关
+    private Handler syncHandler;
+    private Runnable syncRunnable;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +121,7 @@ public class MainActivity extends FragmentActivity
         // 构建 Google 服务连接器
         mGoogleApiClient = new GoogleApiClient.Builder(this)
         		.addApi(LocationServices.API)
+        		.addApi(Wearable.API)
         		.addApi(ActivityRecognition.API)
                	.addScope(Drive.SCOPE_FILE)
                 .addConnectionCallbacks(this)
@@ -184,6 +193,10 @@ public class MainActivity extends FragmentActivity
     
     @Override
     protected void onStop(){
+        // 停止与 Google Play 服务同步数据
+        if(syncHandler != null)
+        	syncHandler.removeCallbacks(syncRunnable);
+        
     	// 断开与 Google Play 服务的连接
         mGoogleApiClient.disconnect();
     	super.onStop();
@@ -694,36 +707,14 @@ public class MainActivity extends FragmentActivity
     
 	@Override
 	public void onConnected(Bundle arg0) {
-		/*
-        Toast toast = Toast.makeText(getApplicationContext(), "连接 Google Play 成功", Toast.LENGTH_LONG);
+        Toast toast = Toast.makeText(getApplicationContext(), 
+        		"连接 Google Play 成功。", Toast.LENGTH_LONG);
         toast.show();
-        android.location.Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
-            toast = Toast.makeText(getApplicationContext(),
-            		String.valueOf(mLastLocation.getLatitude()) + ", " + String.valueOf(mLastLocation.getLongitude())
-, Toast.LENGTH_LONG);
-            toast.show();
-        }
         
-        Intent i = new Intent(this, com.linc.pedometer.service.ActivityRecognitionIntentService.class);
-        PendingIntent mActivityRecognitionPendingIntent = 
-        		PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
-        ActivityRecognition.ActivityRecognitionApi.
-        	requestActivityUpdates(mGoogleApiClient, 0, mActivityRecognitionPendingIntent);
-        	*/
-		
-        Toast toast = Toast.makeText(getApplicationContext(), "连接 Google Play 成功 : ", Toast.LENGTH_LONG);
-        toast.show();
-        android.location.Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
-                mGoogleApiClient);
-        if (mLastLocation != null) {
-        	// tv_location.setText(String.valueOf(mLastLocation.getLatitude()) + ", " + String.valueOf(mLastLocation.getLongitude()));
-        }
+        /* 初始化与 Android Wear 的定时数据同步 */
+        setSyncTimer();
         
         /* 初始化 Google 运动感知 */
-        // 初始状态设置未知
-        
         Intent i = new Intent(this, ActivityRecognitionIntentService.class);
         PendingIntent mActivityRecognitionPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
         ActivityRecognition.ActivityRecognitionApi.
@@ -736,4 +727,70 @@ public class MainActivity extends FragmentActivity
 		// TODO Auto-generated method stub
 		
 	}
+	
+	/* Android Wear */
+	// 同步本地统计数据到 Google Play 上，以供 Android Wear 读取
+	private void setSyncTimer(){
+		/*
+		  Runnable myRunnable= new Runnable() {    
+		        public void run() {  
+		        	while(true){
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					//	System.out.println("Thread run");
+						if(lastPoint != null && Global.isLogin)
+		        	     {
+							peopleAround();
+							upload(lastPoint);
+		        	     }
+		        	//handler.postDelayed(this, 1000); 
+		        	}
+
+		        }  
+		    };  
+
+		*/	  
+		syncHandler = new Handler();
+		syncRunnable = new Runnable() {
+		    @Override
+		    public void run() {
+		    	
+		    	while(true){
+		    		syncSampleDataItem();
+		    		try {
+						Thread.sleep(3000);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+		    	}
+		    	
+		    	// syncHandler.postDelayed(this, 3000);
+		    	
+		    }
+		};
+		syncHandler.postDelayed(syncRunnable, 5000);
+		Thread s = new Thread(syncRunnable);
+		s.start();
+	}
+	
+    private void syncSampleDataItem() {
+        if(mGoogleApiClient==null)
+            return;
+
+        final PutDataMapRequest putRequest = PutDataMapRequest.create("/BIT");
+        final DataMap map = putRequest.getDataMap();
+        // Global.WalkStepValue = Global.WalkStepValue + 1;	// 测试用
+        map.putInt("steps", Global.WalkStepValue);
+        Wearable.DataApi.putDataItem(mGoogleApiClient,  putRequest.asPutDataRequest());
+        
+        // Toast toast = Toast.makeText(getApplicationContext(), 
+       	//	"同步数据 ： " + Global.WalkStepValue, Toast.LENGTH_SHORT);
+        // toast.show();
+    }
+	
 }
