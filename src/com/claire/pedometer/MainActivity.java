@@ -1,4 +1,4 @@
-package com.claire.pedometer;
+	package com.claire.pedometer;
 
 import java.net.URLEncoder;
 import java.util.HashMap;
@@ -10,6 +10,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
+import org.xclcharts.renderer.XEnum.Location;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -66,6 +67,7 @@ import com.google.android.gms.drive.Drive;
 import com.google.android.gms.location.ActivityRecognition;
 import com.google.android.gms.location.LocationServices;
 import com.linc.pedometer.global.Global;
+import com.linc.pedometer.service.ActivityRecognitionIntentService;
 import com.linc.pedometer.service.MD5Util;
 import com.linc.pedometer.service.PedometerSettings;
 import com.linc.pedometer.service.StepService;
@@ -101,8 +103,6 @@ public class MainActivity extends FragmentActivity
 	private static final String STATE_RESOLVING_ERROR = "resolving_error";	
     private boolean mResolvingError = false;
     
-    
-    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,6 +111,7 @@ public class MainActivity extends FragmentActivity
         
         /* START : Google Play Service */
         // 构建 Google 服务连接器
+        
         mGoogleApiClient = new GoogleApiClient.Builder(this)
         		.addApi(LocationServices.API)
         		.addApi(ActivityRecognition.API)
@@ -121,6 +122,7 @@ public class MainActivity extends FragmentActivity
         
         mResolvingError = savedInstanceState != null
                 && savedInstanceState.getBoolean(STATE_RESOLVING_ERROR, false);
+                
         /* END : Google Play Service */
         
         Global.mIsRunning = false;
@@ -238,6 +240,13 @@ public class MainActivity extends FragmentActivity
         }
         // Handle action buttons
         switch(item.getItemId()) {
+        case R.id.exit:
+        	//resetValues(false);
+            unbindStepService();
+            stopStepService();
+            //mQuitting = true;
+            finish();
+            return true;
        /* case R.id.action_websearch:
             // create intent to perform web search for this planet
             Intent intent = new Intent(Intent.ACTION_WEB_SEARCH);
@@ -694,10 +703,37 @@ public class MainActivity extends FragmentActivity
     
 	@Override
 	public void onConnected(Bundle arg0) {
+		/*
         Toast toast = Toast.makeText(getApplicationContext(), "连接 Google Play 成功", Toast.LENGTH_LONG);
         toast.show();
+        android.location.Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+            toast = Toast.makeText(getApplicationContext(),
+            		String.valueOf(mLastLocation.getLatitude()) + ", " + String.valueOf(mLastLocation.getLongitude())
+, Toast.LENGTH_LONG);
+            toast.show();
+        }
         
         Intent i = new Intent(this, com.linc.pedometer.service.ActivityRecognitionIntentService.class);
+        PendingIntent mActivityRecognitionPendingIntent = 
+        		PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
+        ActivityRecognition.ActivityRecognitionApi.
+        	requestActivityUpdates(mGoogleApiClient, 0, mActivityRecognitionPendingIntent);
+        	*/
+		
+        Toast toast = Toast.makeText(getApplicationContext(), "连接 Google Play 成功 : ", Toast.LENGTH_LONG);
+        toast.show();
+        android.location.Location mLastLocation = LocationServices.FusedLocationApi.getLastLocation(
+                mGoogleApiClient);
+        if (mLastLocation != null) {
+        	// tv_location.setText(String.valueOf(mLastLocation.getLatitude()) + ", " + String.valueOf(mLastLocation.getLongitude()));
+        }
+        
+        /* 初始化 Google 运动感知 */
+        // 初始状态设置未知
+        
+        Intent i = new Intent(this, ActivityRecognitionIntentService.class);
         PendingIntent mActivityRecognitionPendingIntent = PendingIntent.getService(this, 0, i, PendingIntent.FLAG_UPDATE_CURRENT);
         ActivityRecognition.ActivityRecognitionApi.
         	requestActivityUpdates(mGoogleApiClient, 0, mActivityRecognitionPendingIntent);

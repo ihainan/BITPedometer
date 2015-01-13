@@ -71,16 +71,11 @@ public class FriendsListActivity extends ListActivity implements OnScrollListene
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
-		switch(item.getItemId()){
-		
-			case R.id.back_to_map:
+		if(item.getItemId() == R.id.back_to_map){
 				Intent intent = new Intent(FriendsListActivity.this,MainActivity.class);
 				intent.putExtra("page", "FIND FRIENDS");
 				FriendsListActivity.this.startActivity(intent);
 //				new AlertDialog.Builder(this).setTitle("back").setMessage("back to map!").setPositiveButton("ok", null).show();
-				break;
-			default:
-				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}

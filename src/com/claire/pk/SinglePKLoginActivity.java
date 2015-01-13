@@ -109,13 +109,8 @@ public class SinglePKLoginActivity extends Activity implements OnScrollListener 
 
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item){
-		switch(item.getItemId()){
-		
-			case R.id.back_to_map:
+		if(item.getItemId() == R.id.back_to_map){
 				new AlertDialog.Builder(this).setTitle("back to").setMessage("back to map!").setPositiveButton("ȷ��", null).show();
-				break;
-			default:
-				break;
 		}
 		return super.onOptionsItemSelected(item);
 	}
