@@ -1,8 +1,14 @@
 package com.claire.friend;
 
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import com.claire.pedometer.BaiduMapActivity;
 import com.claire.pedometer.MainActivity;
 import com.claire.pedometer.R;
+import com.claire.pedometer.BaiduMapActivity.Person;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,6 +37,8 @@ public class FriendsListActivity extends ListActivity implements OnScrollListene
 	private View loadMoreView;  
 	private Button loadMoreButton;  
 	private Handler handler = new Handler(); 
+	public static List<Person> PeopleAround = new ArrayList<Person>();
+	HashMap map = new HashMap();
 
 	
 	public void init(View rootView,LayoutInflater inflater){
@@ -49,6 +57,8 @@ public class FriendsListActivity extends ListActivity implements OnScrollListene
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_friends_list);
+		PeopleAround.addAll(BaiduMapActivity.PeopleAround);
+		
 		loadMoreView = getLayoutInflater().inflate(R.layout.friends_load_more, null);  
 		loadMoreButton = (Button) loadMoreView.findViewById(R.id.loadMoreButton);  
 
@@ -61,11 +71,12 @@ public class FriendsListActivity extends ListActivity implements OnScrollListene
 	
 	private void initAdapter() {
 		adapter = new FriendAdapter(this);
-        for(int i=0;i<10;i++){
+        for(int i=0;i<PeopleAround.size();i++){
         	FriendWrapperInfo wrapper = new FriendWrapperInfo();
-			wrapper.setUsername("hello:"+i);
-			wrapper.setDistance(i+"");
+			wrapper.setUsername(PeopleAround.get(i).name);
+			wrapper.setDistance((int)PeopleAround.get(i).dis+"");
         	adapter.addFriend(wrapper);
+        	
         }
     }  
 
