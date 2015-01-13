@@ -33,5 +33,8 @@ public class Global {
 	public static HomeActivity chartHomeActivity;
 	
 	public static List<LatLng> PeopleAround = new ArrayList<LatLng> ();
+	
+	public static String activityType = "INIT";
+	public static int confidence = 100; 
 
 }

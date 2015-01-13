@@ -18,14 +18,16 @@ public class ActivityRecognitionIntentService extends IntentService{
 
 	@Override
 	protected void onHandleIntent(Intent intent) {
-		// TODO Auto-generated method stub
-		ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
-		Global.activityType = this.getType(result.getMostProbableActivity().getType());
-		Global.confidence = result.getMostProbableActivity().getConfidence();
-		Log.i(TAG, "ÔË¶¯¼ì²â½á¹û £º " + Global.activityType + ", ÖÃĞÅ¶È£º " +  Global.confidence);
+		if(ActivityRecognitionResult.hasResult(intent)){
+			// TODO Auto-generated method stub
+			ActivityRecognitionResult result = ActivityRecognitionResult.extractResult(intent);
+			Global.activityType = this.getType(result.getMostProbableActivity().getType());
+			Global.confidence = result.getMostProbableActivity().getConfidence();
+			Log.i("Login", "è¿åŠ¨ç±»å‹ï¼š" + Global.activityType + ",ç½®ä¿¡åº¦ " +  Global.confidence);
+		}
 	}
 	
-	/* »ñÈ¡ÔË¶¯ÀàĞÍ£¬·µ»Ø×Ö·û´® */
+	/* è·å–è¿åŠ¨ç±»å‹ */
 	private String getType(int type){
 		if(type == DetectedActivity.UNKNOWN)
 			return "UNKNOWN";
