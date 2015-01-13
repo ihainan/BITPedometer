@@ -32,7 +32,7 @@ public class Global {
 	
 	public static HomeActivity chartHomeActivity;
 	
-	public static List<LatLng> PeopleAround = new ArrayList<LatLng> ();
+
 	
 	/* Activity Status */
 	public static String activityType = "UNKNOWN";
