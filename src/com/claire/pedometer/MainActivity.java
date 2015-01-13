@@ -540,7 +540,8 @@ public class MainActivity extends FragmentActivity
 				calorieActivity.init(rootView,tf);
 				break;
 				
-			case "FIND FRIENDS":
+			case "PEOPLE AROUND":
+				System.out.println("11");
 				BaiduMapActivity mapActivity = new BaiduMapActivity();
 				mapActivity.init(rootView, tf);
 				
