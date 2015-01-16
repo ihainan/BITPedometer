@@ -749,7 +749,7 @@ public class MainActivity extends FragmentActivity
 	public void onConnected(Bundle arg0) {
         Toast toast = Toast.makeText(getApplicationContext(), 
         		"连接 Google Play 成功。", Toast.LENGTH_LONG);
-        toast.show();
+        // toast.show();
         
         /* 初始化与 Android Wear 的定时数据同步 */
         setSyncTimer();
@@ -794,6 +794,8 @@ public class MainActivity extends FragmentActivity
 		    };  
 
 		*/	  
+		
+		/*
 		syncHandler = new Handler();
 		syncRunnable = new Runnable() {
 		    @Override
@@ -816,6 +818,7 @@ public class MainActivity extends FragmentActivity
 		syncHandler.postDelayed(syncRunnable, 5000);
 		Thread s = new Thread(syncRunnable);
 		s.start();
+		*/
 	}
 	
     private void syncSampleDataItem() {
